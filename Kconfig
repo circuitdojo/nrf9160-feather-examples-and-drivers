@@ -1,0 +1,11 @@
+#
+# Copyright (c) 2020 Circuit Dojo
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menu "nRF9160 Feather"
+
+rsource "drivers/Kconfig"
+
+endmenu
