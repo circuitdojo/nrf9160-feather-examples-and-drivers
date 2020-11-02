@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2020 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/delete-node/ &w25q16jv;
+
+&spi3 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	sck-pin = <11>;
+	mosi-pin = <9>;
+	miso-pin = <28>;
+	cs-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
+	w25q32jv: w25q32jv@0 {
+		compatible = "jedec,spi-nor";
+		label = "W25Q32JV";
+		reg = <0>;
+		spi-max-frequency = <40000000>;
+		wp-gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+		hold-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+		size = <0x2000000>;
+		has-dpd;
+		t-enter-dpd = <4000>;
+		t-exit-dpd = <25000>;
+		jedec-id = [ef 40 16];
+		has-be32k;
+	};
+};
