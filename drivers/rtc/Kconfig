@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2020 Circuit Dojo LLC
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+comment "RTC Drivers"
+
+rsource "pcf85063a/Kconfig"
