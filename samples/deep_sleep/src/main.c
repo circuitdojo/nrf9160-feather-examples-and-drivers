@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2020 Circuit Dojo LLC
  * Copyright (c) 2016 Open-RnD Sp. z o.o.
  * Copyright (c) 2020 Nordic Semiconductor ASA
  *
