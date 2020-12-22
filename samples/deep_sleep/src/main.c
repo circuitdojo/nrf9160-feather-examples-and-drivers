@@ -28,15 +28,15 @@
 #define POWER_LATCH_PIN 31
 
 /* Static stuff */
-struct device *button;
-struct device *led;
-struct device *gpio;
+const struct device *button;
+const struct device *led;
+const struct device *gpio;
 
 /* Worker for checking button after 2 seconds */
 static struct k_delayed_work button_press_work;
 
 /* LED helpers, which use the led0 devicetree alias if it's available. */
-static struct device *initialize_led(void);
+static const struct device *initialize_led(void);
 
 static struct gpio_callback button_cb_data;
 
@@ -48,6 +48,9 @@ static void button_press_work_fn(struct k_work *item)
 		pressed = true;
 
 	printk("Still pressed: %s\n", pressed ? "true" : "false");
+
+	if (!pressed)
+		return;
 
 	/* Turn off LED */
 	gpio_pin_set(led, LED0_GPIO_PIN, 1);
@@ -69,8 +72,8 @@ static void button_press_work_fn(struct k_work *item)
 	}
 }
 
-void button_pressed(struct device *dev, struct gpio_callback *cb,
-										u32_t pins)
+void button_pressed(const struct device *dev, struct gpio_callback *cb,
+					uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 
@@ -104,17 +107,17 @@ void main(void)
 	if (ret != 0)
 	{
 		printk("Error %d: failed to configure %s pin %d\n",
-					 ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
+			   ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
 		return;
 	}
 
 	ret = gpio_pin_interrupt_configure(button,
-																		 SW0_GPIO_PIN,
-																		 GPIO_INT_EDGE_TO_INACTIVE);
+									   SW0_GPIO_PIN,
+									   GPIO_INT_EDGE_TO_INACTIVE);
 	if (ret != 0)
 	{
 		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-					 ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
+			   ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
 		return;
 	}
 
@@ -134,9 +137,9 @@ void main(void)
 	}
 }
 
-static struct device *initialize_led(void)
+static const struct device *initialize_led(void)
 {
-	struct device *led;
+	const struct device *led;
 	int ret;
 
 	led = device_get_binding(LED0_GPIO_LABEL);
@@ -150,7 +153,7 @@ static struct device *initialize_led(void)
 	if (ret != 0)
 	{
 		printk("Error %d: failed to configure LED device %s pin %d\n",
-					 ret, LED0_GPIO_LABEL, LED0_GPIO_PIN);
+			   ret, LED0_GPIO_LABEL, LED0_GPIO_PIN);
 		return NULL;
 	}
 
