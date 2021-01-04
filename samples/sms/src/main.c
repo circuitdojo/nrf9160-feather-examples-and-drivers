@@ -31,9 +31,9 @@ void bsd_recoverable_error_handler(uint32_t err)
 
 /*TODO: enter your contents of AT+CMGS below*/
 const char *at_commands[] = {
-		"AT+CNMI=3,2,0,1",
-		"AT+CMGS=21\r0001000B912131445411F0000009C834888E2ECBCB21\x1A",
-		/* Add more here if needed */
+	"AT+CNMI=3,2,0,1",
+	"AT+CMGS=21\r0001000B912131445411F0000009C834888E2ECBCB21\x1A",
+	/* Add more here if needed */
 };
 
 /*Callback for AT command*/
@@ -48,15 +48,13 @@ static void sms_work_fn(struct k_work *work)
 	for (int i = 0; i < ARRAY_SIZE(at_commands); i++)
 	{
 		int err;
-		enum at_cmd_state cmd_state = AT_CMD_OK;
 
 		printk("%s\r\n", at_commands[i]);
 
 		if ((err = at_cmd_write_with_callback(at_commands[i],
-																					at_cmd_handler,
-																					&cmd_state)) != 0)
+											  at_cmd_handler)) != 0)
 		{
-			printk("Error sending: %s. Error: %i. State: %i.", at_commands[i], err, (int)cmd_state);
+			printk("Error sending: %s. Error: %i.", at_commands[i], err);
 		}
 	}
 
@@ -65,7 +63,7 @@ static void sms_work_fn(struct k_work *work)
 }
 
 /* Button pressed handler */
-void button_pressed(struct device *dev, struct gpio_callback *cb, uint32_t pins)
+void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 
@@ -75,7 +73,7 @@ void button_pressed(struct device *dev, struct gpio_callback *cb, uint32_t pins)
 
 static void button_init()
 {
-	struct device *button;
+	const struct device *button;
 	int ret;
 
 	button = device_get_binding(SW0_GPIO_LABEL);
@@ -89,16 +87,16 @@ static void button_init()
 	if (ret != 0)
 	{
 		printk("Error %d: failed to configure %s pin %d\n", ret,
-					 SW0_GPIO_LABEL, SW0_GPIO_PIN);
+			   SW0_GPIO_LABEL, SW0_GPIO_PIN);
 		return;
 	}
 
 	ret = gpio_pin_interrupt_configure(button, SW0_GPIO_PIN,
-																		 GPIO_INT_EDGE_TO_ACTIVE);
+									   GPIO_INT_EDGE_TO_ACTIVE);
 	if (ret != 0)
 	{
 		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-					 ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
+			   ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
 		return;
 	}
 

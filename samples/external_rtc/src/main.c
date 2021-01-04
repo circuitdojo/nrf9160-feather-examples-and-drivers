@@ -16,7 +16,7 @@
 LOG_MODULE_REGISTER(main);
 
 /* RTC control */
-struct device *rtc;
+const struct device *rtc;
 
 static void rtc_init()
 {
@@ -33,7 +33,7 @@ static void rtc_init()
 
 	/* 2 seconds */
 	const struct counter_alarm_cfg cfg = {
-			.ticks = 10,
+		.ticks = 10,
 	};
 
 	/* Set the alarm */

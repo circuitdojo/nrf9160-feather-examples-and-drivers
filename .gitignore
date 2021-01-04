@@ -53,3 +53,5 @@ dkms.conf
 
 # Zephyr related
 build
+sparkfun
+.vscode

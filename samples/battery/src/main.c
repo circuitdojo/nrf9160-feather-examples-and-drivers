@@ -27,20 +27,20 @@ static const struct battery_level_point levels[] = {
 	 * and 3.1 V.
 	 */
 
-	{ 10000, 3950 },
-	{ 625, 3550 },
-	{ 0, 3100 },
+	{10000, 3950},
+	{625, 3550},
+	{0, 3100},
 #else
 	/* Linear from maximum voltage to minimum voltage. */
-	{ 10000, 3600 },
-	{ 0, 1700 },
+	{10000, 3600},
+	{0, 1700},
 #endif
 };
 
 static const char *now_str(void)
 {
 	static char buf[16]; /* ...HH:MM:SS.MMM */
-	u32_t now = k_uptime_get_32();
+	uint32_t now = k_uptime_get_32();
 	unsigned int ms = now % MSEC_PER_SEC;
 	unsigned int s;
 	unsigned int min;
@@ -54,7 +54,7 @@ static const char *now_str(void)
 	h = now;
 
 	snprintf(buf, sizeof(buf), "%u:%02u:%02u.%03u",
-		 h, min, s, ms);
+			 h, min, s, ms);
 	return buf;
 }
 
@@ -62,24 +62,27 @@ void main(void)
 {
 	int rc = battery_measure_enable(true);
 
-	if (rc != 0) {
+	if (rc != 0)
+	{
 		printk("Failed initialize battery measurement: %d\n", rc);
 		return;
 	}
 
-	while (true) {
+	while (true)
+	{
 		int batt_mV = battery_sample();
 
-		if (batt_mV < 0) {
+		if (batt_mV < 0)
+		{
 			printk("Failed to read battery voltage: %d\n",
-			       batt_mV);
+				   batt_mV);
 			break;
 		}
 
 		unsigned int batt_pptt = battery_level_pptt(batt_mV, levels);
 
 		printk("[%s]: %d mV; %u pptt\n", now_str(),
-		       batt_mV, batt_pptt);
+			   batt_mV, batt_pptt);
 
 		/* Burn battery so you can see that this works over time */
 		k_busy_wait(5 * USEC_PER_SEC);

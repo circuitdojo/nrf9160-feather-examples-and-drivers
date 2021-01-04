@@ -45,21 +45,21 @@
 #endif
 
 /* LED helpers, which use the led0 devicetree alias if it's available. */
-static struct device *initialize_led(void);
-static void match_led_to_button(struct device *button, struct device *led);
+static const struct device *initialize_led(void);
+static void match_led_to_button(const struct device *button, const struct device *led);
 
 static struct gpio_callback button_cb_data;
 
-void button_pressed(struct device *dev, struct gpio_callback *cb,
-		    u32_t pins)
+void button_pressed(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
 
 void main(void)
 {
-	struct device *button;
-	struct device *led;
+	const struct device *button;
+	const struct device *led;
 	int ret;
 
 	button = device_get_binding(SW0_GPIO_LABEL);
@@ -111,9 +111,9 @@ void main(void)
 #endif
 
 #ifdef LED0_GPIO_LABEL
-static struct device *initialize_led(void)
+static const struct device *initialize_led(void)
 {
-	struct device *led;
+	const struct device *led;
 	int ret;
 
 	led = device_get_binding(LED0_GPIO_LABEL);
@@ -134,7 +134,7 @@ static struct device *initialize_led(void)
 	return led;
 }
 
-static void match_led_to_button(struct device *button, struct device *led)
+static void match_led_to_button(const struct device *button, const struct device *led)
 {
 	bool val;
 
@@ -143,13 +143,13 @@ static void match_led_to_button(struct device *button, struct device *led)
 }
 
 #else  /* !defined(LED0_GPIO_LABEL) */
-static struct device *initialize_led(void)
+static const struct device *initialize_led(void)
 {
 	printk("No LED device was defined\n");
 	return NULL;
 }
 
-static void match_led_to_button(struct device *button, struct device *led)
+static void match_led_to_button(const struct device *button, const struct device *led)
 {
 	return;
 }

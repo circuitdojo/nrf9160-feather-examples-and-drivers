@@ -116,11 +116,11 @@ struct pcf85063a_time
 
 struct pcf85063a_data
 {
-	struct device *dev;
-	struct device *i2c;
+	const struct device *dev;
+	const struct device *i2c;
 };
 
-int pcf85063a_init(struct device *dev);
+int pcf85063a_init(const struct device *dev);
 int pcf85063a_osc_en(bool enabled);
 int pcf85063a_set_time(struct pcf85063a_time *time);
 int pcf85063a_get_time(struct pcf85063a_time *time);

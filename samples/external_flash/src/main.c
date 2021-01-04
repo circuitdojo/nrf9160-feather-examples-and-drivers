@@ -20,10 +20,10 @@
 
 FS_LITTLEFS_DECLARE_DEFAULT_CONFIG(storage);
 static struct fs_mount_t lfs_storage_mnt = {
-		.type = FS_LITTLEFS,
-		.fs_data = &storage,
-		.storage_dev = (void *)FLASH_AREA_ID(external_flash),
-		.mnt_point = "/lfs",
+	.type = FS_LITTLEFS,
+	.fs_data = &storage,
+	.storage_dev = (void *)FLASH_AREA_ID(external_flash),
+	.mnt_point = "/lfs",
 };
 
 void main(void)
@@ -41,13 +41,13 @@ void main(void)
 	if (rc < 0)
 	{
 		printk("FAIL: unable to find flash area %u: %d\n",
-					 id, rc);
+			   id, rc);
 		return;
 	}
 
 	printk("Area %u at 0x%x on %s for %u bytes\n",
-				 id, (unsigned int)pfa->fa_off, pfa->fa_dev_name,
-				 (unsigned int)pfa->fa_size);
+		   id, (unsigned int)pfa->fa_off, pfa->fa_dev_name,
+		   (unsigned int)pfa->fa_size);
 
 	/* Optional wipe flash contents */
 	if (IS_ENABLED(CONFIG_APP_WIPE_STORAGE))
@@ -63,8 +63,8 @@ void main(void)
 	if (rc < 0)
 	{
 		printk("FAIL: mount id %u at %s: %d\n",
-					 (unsigned int)mp->storage_dev, mp->mnt_point,
-					 rc);
+			   (unsigned int)mp->storage_dev, mp->mnt_point,
+			   rc);
 		return;
 	}
 	printk("%s mount: %d\n", mp->mnt_point, rc);
@@ -77,10 +77,10 @@ void main(void)
 	}
 
 	printk("%s: bsize = %lu ; frsize = %lu ;"
-				 " blocks = %lu ; bfree = %lu\n",
-				 mp->mnt_point,
-				 sbuf.f_bsize, sbuf.f_frsize,
-				 sbuf.f_blocks, sbuf.f_bfree);
+		   " blocks = %lu ; bfree = %lu\n",
+		   mp->mnt_point,
+		   sbuf.f_bsize, sbuf.f_frsize,
+		   sbuf.f_blocks, sbuf.f_bfree);
 
 	struct fs_dirent dirent;
 
@@ -93,14 +93,14 @@ void main(void)
 
 	struct fs_file_t file;
 
-	rc = fs_open(&file, fname);
+	rc = fs_open(&file, fname, FS_O_CREATE | FS_O_RDWR);
 	if (rc < 0)
 	{
 		printk("FAIL: open %s: %d\n", fname, rc);
 		goto out;
 	}
 
-	u32_t boot_count = 0;
+	uint32_t boot_count = 0;
 
 	if (rc >= 0)
 	{
@@ -113,7 +113,7 @@ void main(void)
 	boot_count += 1;
 	rc = fs_write(&file, &boot_count, sizeof(boot_count));
 	printk("%s write new boot count %u: %d\n", fname,
-				 boot_count, rc);
+		   boot_count, rc);
 
 	rc = fs_close(&file);
 	printk("%s close: %d\n", fname, rc);
