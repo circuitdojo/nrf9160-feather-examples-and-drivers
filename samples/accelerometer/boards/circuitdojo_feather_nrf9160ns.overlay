@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2020 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+ 
+&i2c1 {
+	lis2dh@18 {
+		compatible = "st,lis2dh";
+		label = "LIS2DH";
+		reg = <0x18>;
+		irq-gpios = <&gpio0 29 0>;
+	};
+};
