@@ -9,6 +9,14 @@ menuconfig EXTERNAL_SENSORS
 
 if EXTERNAL_SENSORS
 
+if BOARD_THINGY91_NRF9160NS
+
+config EXTERNAL_SENSOR_ENVIRONMENTAL
+	bool "Enable environmental sensor if Thingy91"
+	default y
+
+endif
+
 module = EXTERNAL_SENSORS
 module-str = External sensors
 source "subsys/logging/Kconfig.template.log_config"
