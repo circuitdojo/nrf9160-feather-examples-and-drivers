@@ -157,7 +157,7 @@ static void movement_data_send(const struct ext_sensor_evt *const acc_data)
 static int environmental_data_get(void)
 {
 	struct sensor_module_event *sensor_module_event;
-#if defined(CONFIG_EXTERNAL_SENSORS)
+#if defined(EXTERNAL_SENSOR_ENVIRONMENTAL)
 	int err;
 	double temp, hum;
 
