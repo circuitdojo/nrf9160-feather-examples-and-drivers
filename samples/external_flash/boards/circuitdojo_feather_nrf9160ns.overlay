@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2020 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+&spi3 {
+    /delete-node/ w25q16jv@0;
+
+    w25q32jv: w25q32jv@0 {
+        compatible = "jedec,spi-nor";
+        label = "W25Q32JV";
+        reg = <0>;
+        spi-max-frequency = <40000000>;
+        wp-gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+        hold-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+        size = <0x2000000>;
+        has-dpd;
+        t-enter-dpd = <3000>;
+        t-exit-dpd = <30000>;
+        jedec-id = [ ef 40 16  ];
+    };
+};
