@@ -22,6 +22,8 @@ LOG_MODULE_REGISTER(ext_sensors, CONFIG_EXTERNAL_SENSORS_LOG_LEVEL);
 #define RANGE_MAX_M_S2 39.2266
 #elif defined(CONFIG_ADXL362_ACCEL_RANGE_8G) || defined(CONFIG_LIS2DH_ACCEL_RANGE_8G)
 #define RANGE_MAX_M_S2 78.4532
+#else
+#error Unknown accel mode!
 #endif
 
 #endif
@@ -47,7 +49,7 @@ struct env_sensor
 	struct k_spinlock lock;
 };
 
-#if defined(EXTERNAL_SENSOR_ENVIRONMENTAL)
+#if defined(CONFIG_EXTERNAL_SENSOR_ENVIRONMENTAL)
 static struct env_sensor temp_sensor = {
 	.channel = SENSOR_CHAN_AMBIENT_TEMP,
 	.dev = DEVICE_DT_GET(DT_ALIAS(temp_sensor)),
@@ -134,7 +136,7 @@ int ext_sensors_init(ext_sensor_handler_t handler)
 		return -EINVAL;
 	}
 
-#if defined(EXTERNAL_SENSOR_ENVIRONMENTAL)
+#if defined(CONFIG_EXTERNAL_SENSOR_ENVIRONMENTAL)
 	if (!device_is_ready(temp_sensor.dev))
 	{
 		LOG_ERR("Temperature sensor device is not ready");
@@ -156,7 +158,12 @@ int ext_sensors_init(ext_sensor_handler_t handler)
 
 	struct sensor_trigger trig = {.chan = SENSOR_CHAN_ACCEL_XYZ};
 
+#if defined(CONFIG_BOARD_THINGY91_NRF9160NS)
 	trig.type = SENSOR_TRIG_THRESHOLD;
+#elif defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
+	trig.type = SENSOR_TRIG_DELTA;
+#endif
+
 	if (sensor_trigger_set(accel_sensor.dev, &trig,
 						   accelerometer_trigger_handler))
 	{
@@ -170,7 +177,7 @@ int ext_sensors_init(ext_sensor_handler_t handler)
 	return 0;
 }
 
-#if defined(EXTERNAL_SENSOR_ENVIRONMENTAL)
+#if defined(CONFIG_EXTERNAL_SENSOR_ENVIRONMENTAL)
 int ext_sensors_temperature_get(double *ext_temp)
 {
 	int err;
@@ -230,7 +237,7 @@ int ext_sensors_humidity_get(double *ext_hum)
 
 int ext_sensors_mov_thres_set(double threshold_new)
 {
-	int err, input_value;
+	int input_value;
 	double range_max_m_s2 = RANGE_MAX_M_S2;
 	double threshold_new_copy;
 
@@ -260,6 +267,9 @@ int ext_sensors_mov_thres_set(double threshold_new)
 	{
 		input_value = 0;
 	}
+
+#if defined(CONFIG_BOARD_THINGY91_NRF9160NS)
+	int err;
 
 	const struct sensor_value data = {
 		.val1 = input_value};
@@ -293,6 +303,21 @@ int ext_sensors_mov_thres_set(double threshold_new)
 				accel_sensor.dev->name, err);
 		return err;
 	}
+#elif defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
+
+	/* TODO: address this if need be */
+	/* The LIS2DH has only one threshold register per interrupt 
+	err = sensor_attr_set(accel_sensor.dev, SENSOR_CHAN_ACCEL_XYZ,
+						  SENSOR_ATTR_SLOPE_TH, &data);
+	if (err)
+	{
+		LOG_ERR("Failed to set accelerometer threshold value");
+		LOG_ERR("Device: %s, error: %d",
+				accel_sensor.dev->name, err);
+		return err;
+	}*/
+
+#endif
 
 	threshold = threshold_new_copy;
 
