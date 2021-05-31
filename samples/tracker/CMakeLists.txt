@@ -48,21 +48,6 @@ if(version)
 
 endif()
 
-# Create manifest file
-execute_process(
-  COMMAND deno run --allow-run --allow-write ${PYRINAS_DIR}/scripts/manifest-generator.ts
-  WORKING_DIRECTORY                ${CMAKE_CURRENT_LIST_DIR}
-  OUTPUT_VARIABLE                  version
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_STRIP_TRAILING_WHITESPACE
-  ERROR_VARIABLE                   stderr
-  RESULT_VARIABLE                  return_code
-)
-
-if(return_code)
-  message(STATUS "manifest generation failed: ${stderr}")
-endif()
-
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(asset_tracker_v2)
 

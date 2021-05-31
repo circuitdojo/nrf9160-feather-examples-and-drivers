@@ -76,7 +76,7 @@ void pyrinas_cloud_event_handler(const struct pyrinas_cloud_evt *const evt)
         notify = true;
         break;
     default:
-        LOG_ERR("Unknown Pyrinas Cloud event type: %d", evt->type);
+        LOG_WRN("Unknown Pyrinas Cloud event type: %d", evt->type);
         break;
     }
 
@@ -114,6 +114,7 @@ int cloud_wrap_connect(void)
 {
     int err;
 
+    /* Then connect */
     err = pyrinas_cloud_connect();
     if (err)
     {
