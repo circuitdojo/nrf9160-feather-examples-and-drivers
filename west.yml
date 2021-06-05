@@ -1,0 +1,14 @@
+# Example application-specific west.yml, using manifest imports.
+manifest:
+  remotes:
+    - name: nrfconnect
+      url-base: https://github.com/nrfconnect
+  projects:
+    - name: nrf
+      repo-path: sdk-nrf
+      remote: nrfconnect
+      revision: v1.5.0
+      import: true
+  self:
+    # This repository should be cloned to nrf9160-feather
+    path: nfed
