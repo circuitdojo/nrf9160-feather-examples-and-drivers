@@ -13,7 +13,6 @@
 #include <sys/printk.h>
 #include <inttypes.h>
 
-#define SLEEP_TIME_MS 1
 #define SW0_NODE DT_ALIAS(sw0)
 #define SW0_GPIO_LABEL DT_GPIO_LABEL(SW0_NODE, gpios)
 #define SW0_GPIO_PIN DT_GPIO_PIN(SW0_NODE, gpios)
@@ -133,7 +132,7 @@ void main(void)
 	printk("Press the button\n");
 	while (1)
 	{
-		k_msleep(SLEEP_TIME_MS);
+		k_cpu_idle();
 	}
 }
 
