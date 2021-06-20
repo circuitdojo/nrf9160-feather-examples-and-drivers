@@ -472,10 +472,6 @@ void main(void)
 
 	self.thread_id = k_current_get();
 
-#if defined(CONFIG_FILE_SYSTEM_LITTLEFS)
-	flash_init();
-#endif
-
 	module_start(&self);
 	handle_nrf_modem_lib_init_ret();
 

@@ -50,7 +50,7 @@ void pyrinas_cloud_event_handler(const struct pyrinas_cloud_evt *const evt)
     case PYRINAS_CLOUD_EVT_DATA_RECIEVED:
         LOG_DBG("PYRINAS_CLOUD_EVT_DATA_RECIEVED");
         cloud_wrap_evt.type = CLOUD_WRAP_EVT_DATA_RECEIVED;
-        cloud_wrap_evt.data.buf = evt->data.msg.data;
+        cloud_wrap_evt.data.buf = (uint8_t *)evt->data.msg.data;
         cloud_wrap_evt.data.len = evt->data.msg.data_len;
         notify = true;
         break;

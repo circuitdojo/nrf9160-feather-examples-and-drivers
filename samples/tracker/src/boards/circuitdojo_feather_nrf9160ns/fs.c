@@ -1,4 +1,8 @@
 #include <zephyr.h>
+#include <init.h>
+#include <logging/log.h>
+
+LOG_MODULE_REGISTER(nrf9160_feather_fs);
 
 /* Storage for settings */
 #if defined(CONFIG_FILE_SYSTEM_LITTLEFS)
@@ -13,7 +17,7 @@ static struct fs_mount_t lfs_storage_mnt = {
 	.mnt_point = "/lfs",
 };
 
-static void flash_init()
+static int flash_init(const struct device *dev)
 {
 	struct fs_mount_t *mp = &lfs_storage_mnt;
 	unsigned int id = (uintptr_t)mp->storage_dev;
@@ -27,7 +31,7 @@ static void flash_init()
 	{
 		LOG_ERR("FAIL: unable to find flash area %u: %d",
 				id, rc);
-		return;
+		return rc;
 	}
 
 	LOG_INF("Area %u at 0x%x on %s for %u bytes",
@@ -50,7 +54,7 @@ static void flash_init()
 		LOG_ERR("FAIL: mount id %u at %s: %d",
 				(unsigned int)mp->storage_dev, mp->mnt_point,
 				rc);
-		return;
+		return rc;
 	}
 	LOG_INF("%s mount: %d", mp->mnt_point, rc);
 
@@ -58,7 +62,7 @@ static void flash_init()
 	if (rc < 0)
 	{
 		LOG_ERR("FAIL: statvfs: %d", rc);
-		return;
+		return rc;
 	}
 
 	LOG_INF("%s: bsize = %lu ; frsize = %lu ;"
@@ -67,13 +71,11 @@ static void flash_init()
 			sbuf.f_bsize, sbuf.f_frsize,
 			sbuf.f_blocks, sbuf.f_bfree);
 
-	rc = fs_unmount(mp);
-	if (rc < 0)
-	{
-		LOG_ERR("FAIL: unmount id %u at %s: %d",
-				(unsigned int)mp->storage_dev, mp->mnt_point,
-				rc);
-		return;
-	}
+	return 0;
 }
+
+/* needs to be done early*/
+SYS_INIT(flash_init, APPLICATION,
+		 CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+
 #endif /*#if defined(CONFIG_FILE_SYSTEM_LITTLEFS) */

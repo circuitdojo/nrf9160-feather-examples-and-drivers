@@ -71,11 +71,12 @@ if(version)
 endif()
 
 # Define configuration files.
-set(CONF_FILE
+list(APPEND CONF_FILE
   ${CMAKE_CURRENT_SOURCE_DIR}/prj.conf
   ${CMAKE_CURRENT_SOURCE_DIR}/version.conf
   ${CMAKE_CURRENT_SOURCE_DIR}/conf/${BUILD_TYPE}.conf
   ${CMAKE_CURRENT_SOURCE_DIR}/conf/backend/${BACKEND}.conf
+  ${CMAKE_CURRENT_SOURCE_DIR}/boards/${BOARD}.conf
   )
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
@@ -91,11 +92,9 @@ target_include_directories(app PRIVATE src)
 # Application directories
 add_subdirectory(src/modules)
 add_subdirectory(src/events)
+add_subdirectory(src/boards)
 
 add_subdirectory_ifdef(CONFIG_CLOUD_MODULE src/cloud)
 add_subdirectory_ifdef(CONFIG_UI_MODULE src/led)
 add_subdirectory_ifdef(CONFIG_SENSOR_MODULE src/ext_sensors)
 add_subdirectory_ifdef(CONFIG_WATCHDOG_APPLICATION src/watchdog)
-
-target_sources_ifdef(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS app PRIVATE
-                        src/boards/circuitdojo_feather_nrf9160ns/*.c)
