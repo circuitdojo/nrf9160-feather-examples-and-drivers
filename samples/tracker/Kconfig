@@ -9,20 +9,23 @@ menu "Asset Tracker"
 config ASSET_TRACKER_V2_APP_VERSION
 	string "Asset Tracker application firmware version"
 	default "0.0.0-development"
-
-rsource "src/modules/Kconfig.modules_common"
-rsource "src/modules/Kconfig.app_module"
-rsource "src/modules/Kconfig.cloud_module"
-rsource "src/modules/Kconfig.data_module"
-rsource "src/modules/Kconfig.gps_module"
-rsource "src/modules/Kconfig.modem_module"
+	
 rsource "src/modules/Kconfig.sensor_module"
-rsource "src/modules/Kconfig.ui_module"
-rsource "src/modules/Kconfig.util_module"
 
-rsource "src/cloud/cloud_codec/Kconfig"
-rsource "src/watchdog/Kconfig"
-rsource "src/events/Kconfig"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.modules_common"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.app_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.cloud_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.data_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.gps_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.modem_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.ui_module"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/modules/Kconfig.util_module"
+
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/cloud/cloud_codec/Kconfig"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/watchdog/Kconfig"
+rsource "$srctree/../nrf/applications/asset_tracker_v2/src/events/Kconfig"
+
+
 
 endmenu
 

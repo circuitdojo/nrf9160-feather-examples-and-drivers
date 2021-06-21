@@ -4,11 +4,5 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-target_include_directories(app PRIVATE .)
-target_sources_ifdef(CONFIG_AWS_IOT app
-                     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/aws_iot_codec.c)
 target_sources_ifdef(CONFIG_PYRINAS_CLOUD_ENABLED app 
-                     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/aws_iot_codec.c)
-
-target_sources(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cloud_codec_ringbuffer.c)
-target_sources(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/json_aux.c)
+                     PRIVATE ${ASSET_TRACKER_PATH}/src/cloud/cloud_codec/aws_iot_codec.c)

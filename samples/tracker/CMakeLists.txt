@@ -82,19 +82,24 @@ list(APPEND CONF_FILE
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(asset_tracker_v2)
 
+# Setting example directory path
+set(ASSET_TRACKER_PATH ${NRF_DIR}/applications/asset_tracker_v2)
+
 # NORDIC SDK APP START
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE ${ASSET_TRACKER_PATH}/src/main.c)
 # NORDIC SDK APP END
 
 # Include source directory
-target_include_directories(app PRIVATE src)
+target_include_directories(app PRIVATE ${ASSET_TRACKER_PATH}/src)
 
 # Application directories
 add_subdirectory(src/modules)
-add_subdirectory(src/events)
 add_subdirectory(src/boards)
 
-add_subdirectory_ifdef(CONFIG_CLOUD_MODULE src/cloud)
-add_subdirectory_ifdef(CONFIG_UI_MODULE src/led)
-add_subdirectory_ifdef(CONFIG_SENSOR_MODULE src/ext_sensors)
-add_subdirectory_ifdef(CONFIG_WATCHDOG_APPLICATION src/watchdog)
+add_subdirectory(src/cloud)
+add_subdirectory(src/ext_sensors)
+
+add_subdirectory(${ASSET_TRACKER_PATH}/src/events src/_events)
+add_subdirectory(${ASSET_TRACKER_PATH}/src/cloud src/_cloud)
+add_subdirectory(${ASSET_TRACKER_PATH}/src/led src/_led)
+add_subdirectory(${ASSET_TRACKER_PATH}/src/watchdog src/_watchdog)
