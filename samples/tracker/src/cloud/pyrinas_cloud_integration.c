@@ -3,6 +3,8 @@
 #include <pyrinas_cloud/pyrinas_cloud.h>
 #include <modem/at_cmd.h>
 
+#include <app/version.h>
+
 #define MODULE pyrinas_cloud_integration
 
 #include <logging/log.h>
@@ -96,10 +98,14 @@ int cloud_wrap_init(cloud_wrap_evt_handler_t event_handler)
 
     pyrinas_cloud_init(&config);
 
+    uint8_t ver[24];
+
+    /* Get version string */
+    get_version_string(ver, sizeof(ver));
+
     LOG_INF("********************************************");
     LOG_INF(" The Asset Tracker v2 has started");
-    LOG_INF(" Version:     %s",
-            CONFIG_ASSET_TRACKER_V2_APP_VERSION);
+    LOG_INF(" Version:     %s", ver);
     LOG_INF(" Cloud:       %s", "Pyrinas Cloud");
     LOG_INF(" Endpoint:    %s",
             CONFIG_PYRINAS_CLOUD_MQTT_BROKER_HOSTNAME);
