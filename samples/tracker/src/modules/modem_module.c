@@ -21,6 +21,11 @@
 #include "events/util_module_event.h"
 #include "events/cloud_module_event.h"
 
+#if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
+#include "pyrinas_cloud/pyrinas_cloud_version.h"
+#include "battery.h"
+#endif
+
 #include <logging/log.h>
 LOG_MODULE_REGISTER(MODULE, CONFIG_MODEM_MODULE_LOG_LEVEL);
 
@@ -405,7 +410,26 @@ static bool battery_data_requested(enum app_module_data_type *data_list,
 
 static int battery_data_get(void)
 {
-	int err;
+
+	struct modem_module_event *modem_module_event =
+		new_modem_module_event();
+
+#if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
+
+	battery_measure_enable(true);
+
+	k_sleep(K_MSEC(100));
+
+	int batt_mV = battery_sample();
+
+	k_sleep(K_MSEC(100));
+
+	battery_measure_enable(false);
+
+	/* Set it */
+	modem_module_event->data.bat.battery_voltage = batt_mV;
+
+#else
 
 	/* Replace this function with a function that specifically
 	 * requests battery.
@@ -421,6 +445,8 @@ static int battery_data_get(void)
 
 	modem_module_event->data.bat.battery_voltage =
 			modem_param.device.battery.value;
+#endif
+
 	modem_module_event->data.bat.timestamp = k_uptime_get();
 	modem_module_event->type = MODEM_EVT_BATTERY_DATA_READY;
 

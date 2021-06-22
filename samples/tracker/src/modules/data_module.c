@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(MODULE, CONFIG_DATA_MODULE_LOG_LEVEL);
 #define DEFAULT_MOVEMENT_TIMEOUT_SECONDS	3600
 #define DEFAULT_ACCELEROMETER_THRESHOLD		10
 #define DEFAULT_GPS_TIMEOUT_SECONDS		60
-#define DEFAULT_DEVICE_MODE			true
+#define DEFAULT_DEVICE_MODE			false
 
 /* Value that is used to limit the maximum allowed device configuration value
  * for the accelerometer threshold. 100 m/s2 ~ 10.2g.

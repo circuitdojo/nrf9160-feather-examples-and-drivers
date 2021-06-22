@@ -32,7 +32,7 @@ LOG_MODULE_REGISTER(ext_sensors, CONFIG_EXTERNAL_SENSORS_LOG_LEVEL);
 #if defined(CONFIG_BOARD_THINGY91_NRF9160NS)
 #define THRESHOLD_RESOLUTION_DECIMAL_MAX 2048
 #elif defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
-#define THRESHOLD_RESOLUTION_DECIMAL_MAX 1024
+#define THRESHOLD_RESOLUTION_DECIMAL_MAX 127
 #else
 #error Board unsupported!
 #endif
@@ -80,6 +80,7 @@ static void accelerometer_trigger_handler(const struct device *dev,
 	switch (trig->type)
 	{
 	case SENSOR_TRIG_THRESHOLD:
+	case SENSOR_TRIG_DELTA:
 
 		/* Ignore the initial trigger after initialization of the
 		 * accelerometer which always carries jibberish xyz values.
@@ -268,8 +269,9 @@ int ext_sensors_mov_thres_set(double threshold_new)
 		input_value = 0;
 	}
 
-#if defined(CONFIG_BOARD_THINGY91_NRF9160NS)
 	int err;
+
+#if defined(CONFIG_BOARD_THINGY91_NRF9160NS)
 
 	const struct sensor_value data = {
 		.val1 = input_value};
@@ -305,8 +307,11 @@ int ext_sensors_mov_thres_set(double threshold_new)
 	}
 #elif defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160NS)
 
-	/* TODO: address this if need be */
-	/* The LIS2DH has only one threshold register per interrupt 
+	struct sensor_value data = {
+		.val1 = input_value,
+		.val2 = 0};
+
+	/* The LIS2DH has only one threshold register per interrupt  */
 	err = sensor_attr_set(accel_sensor.dev, SENSOR_CHAN_ACCEL_XYZ,
 						  SENSOR_ATTR_SLOPE_TH, &data);
 	if (err)
@@ -315,7 +320,19 @@ int ext_sensors_mov_thres_set(double threshold_new)
 		LOG_ERR("Device: %s, error: %d",
 				accel_sensor.dev->name, err);
 		return err;
-	}*/
+	}
+
+	data.val1 = 0;
+
+	err = sensor_attr_set(accel_sensor.dev, SENSOR_CHAN_ACCEL_XYZ,
+						  SENSOR_ATTR_SLOPE_DUR, &data);
+	if (err)
+	{
+		LOG_ERR("Failed to set accelerometer duration value");
+		LOG_ERR("Device: %s, error: %d",
+				accel_sensor.dev->name, err);
+		return err;
+	}
 
 #endif
 
