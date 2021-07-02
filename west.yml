@@ -9,6 +9,11 @@ manifest:
       remote: nrfconnect
       revision: v1.5.0
       import: true
+    - name: pyrinas
+      url: https://github.com/pyrinas-iot/pyrinas-zephyr
+      revision: v1.5.x
+      path: pyrinas
+      import: true
   self:
     # This repository should be cloned to nrf9160-feather
     path: nfed
