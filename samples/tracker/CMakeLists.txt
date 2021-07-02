@@ -20,16 +20,11 @@ endif()
 message(STATUS "Build type: ${BUILD_TYPE} 🚀")
 message(STATUS "Backend: ${BACKEND} 🏓")
 
-# MCUboot related
-list(APPEND mcuboot_OVERLAY_CONFIG
-  "${CMAKE_CURRENT_SOURCE_DIR}/conf/mcuboot/mcuboot.conf"
-  )
-
 # Adding custom overlay to add settings that aren't included in the SDK (yet) for the nRF9160 Feather
 if(${BOARD} STREQUAL circuitdojo_feather_nrf9160ns)
 message(STATUS "Adding .overlay for mcuboot.")
 list(APPEND mcuboot_DTC_OVERLAY_FILE
-  "${CMAKE_CURRENT_SOURCE_DIR}/conf/mcuboot/circuitdojo_feather_nrf9160ns.overlay"
+  "${CMAKE_CURRENT_LIST_DIR}/../../shared/conf/mcuboot/circuitdojo_feather_nrf9160ns.overlay"
   )
 endif()
 
