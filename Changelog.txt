@@ -1,0 +1,31 @@
+# Changelog
+
+## 0.2.0 Release
+
+Added:
+* Automated patching for Zephyr LIS2DH driver
+* Automated patching of bootloader
+* Automated import for bootloader .overlay for all samples
+* Patch for allowing ANYM mode for INT1 on the LIS2DH
+* Tracker: Actual battery sample to battery_data_get
+* Created Tracker and pointed to KConfigs and CMakeLists.txt within nRF Asset Tracker v2
+* Accelerometer/Tracker: Added disconnect-sdo-sa0-pull-up for low power modes
+* Tracker: Boards sub-directory added for board specific files
+* Tracker: Moved fs init outside of main
+* Tracker: Fixed warning related to const data in pyrinas_cloud_integration
+* Tracker: Wrapped board Cmakelists.txt in board specific variable for nRF9160 Feather
+
+Changed:
+* Readme: Changed recommendations on how to import the project to nrf/west.yml
+* Added pyrinas to west.yml in NFED
+* Moved bootloader overlay to a shared location
+* Tracker: Using Pyrinas version in cloud_integration
+* Tracker: Enabled AGPS via SUPL
+* Tracker Device mode is set to false (interrupt powered by accel)
+* Tracker Ext_sensors now sets sensor value correctly for LIS2DH
+* Tracker CONFIG_EXTERNAL_SENSORS=y for nRF9160 Feather
+
+Removed:
+* Tracker: mcuboot.conf as it wasn't used
+* Tracker: Removing duplicate CONFIG_EXTERNAL_SENSORS
+* KConfigs and CMake files from example themselves
