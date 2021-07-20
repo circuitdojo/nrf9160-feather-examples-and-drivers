@@ -257,6 +257,6 @@ int pcf85063a_init(const struct device *dev)
 	return 0;
 }
 
-DEVICE_AND_API_INIT(pcf85063a, DT_INST_LABEL(0), pcf85063a_init, &pcf85063a_data,
-					&pcf85063_cfg_info, POST_KERNEL, CONFIG_I2C_INIT_PRIORITY,
-					&pcf85063a_driver_api);
+DEVICE_DEFINE(pcf85063a, DT_INST_LABEL(0), pcf85063a_init, device_pm_control_nop, &pcf85063a_data,
+			  &pcf85063_cfg_info, POST_KERNEL, CONFIG_I2C_INIT_PRIORITY,
+			  &pcf85063a_driver_api);
