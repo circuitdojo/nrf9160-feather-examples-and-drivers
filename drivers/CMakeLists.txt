@@ -5,3 +5,4 @@
 #
 
 add_subdirectory(rtc)
+add_subdirectory(battery)
