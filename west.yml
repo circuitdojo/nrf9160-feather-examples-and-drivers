@@ -7,7 +7,7 @@ manifest:
     - name: nrf
       repo-path: sdk-nrf
       remote: nrfconnect
-      revision: v1.5.1
+      revision: v1.6.1
       import: true
     - name: pyrinas
       url: https://github.com/pyrinas-iot/pyrinas-zephyr
