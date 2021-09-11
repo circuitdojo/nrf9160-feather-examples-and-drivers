@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.13.1)
 if(${BOARD} STREQUAL circuitdojo_feather_nrf9160ns)
 message(STATUS "Adding .overlay for mcuboot.")
 list(APPEND mcuboot_DTC_OVERLAY_FILE
-  "${CMAKE_CURRENT_LIST_DIR}/../../shared/conf/mcuboot/circuitdojo_feather_nrf9160ns.overlay"
+  "${CMAKE_CURRENT_LIST_DIR}/conf/mcuboot/circuitdojo_feather_nrf9160ns.overlay"
   )
 endif()
 
