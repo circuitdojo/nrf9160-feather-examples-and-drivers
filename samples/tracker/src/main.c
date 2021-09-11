@@ -466,9 +466,22 @@ static void on_all_events(struct app_msg_data *msg)
 	}
 }
 
+/* Static instance of uart */
+const static struct device *uart;
+
+
 void main(void)
 {
 	struct app_msg_data msg;
+
+	/* Since we use UART0 for the bootloader, it needs to be disabled here.*/
+#if !defined(CONFIG_LOG)
+	uart = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
+	__ASSERT(uart, "Failed to get the uart device");
+
+	/* Set power state */
+	device_set_power_state(uart, DEVICE_PM_OFF_STATE, NULL, NULL);
+#endif 
 
 	self.thread_id = k_current_get();
 
