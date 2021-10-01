@@ -89,6 +89,9 @@ static int pcf85063a_set_alarm(
 	// Ret val for error checking
 	int ret;
 
+	// Stop
+	pcf85063a_stop(dev);
+
 	// Clear any flags in CTRL2
 	uint8_t reg = 0;
 	uint8_t mask = PCF85063A_CTRL2_TF;
@@ -114,7 +117,7 @@ static int pcf85063a_set_alarm(
 	reg = (PCF85063A_TIMER_MODE_FREQ_1 << PCF85063A_TIMER_MODE_FREQ_SHIFT) | PCF85063A_TIMER_MODE_EN | PCF85063A_TIMER_MODE_INT_EN;
 	mask = PCF85063A_TIMER_MODE_FREQ_MASK | PCF85063A_TIMER_MODE_EN | PCF85063A_TIMER_MODE_INT_EN;
 
-	LOG_INF("mode 0x%x", reg);
+	LOG_DBG("mode 0x%x", reg);
 
 	// Write back the updated register value
 	ret = i2c_reg_update_byte(data->i2c, DT_REG_ADDR(DT_DRV_INST(0)),
@@ -124,6 +127,8 @@ static int pcf85063a_set_alarm(
 		LOG_ERR("Unable to set RTC alarm. (err %i)", ret);
 		return ret;
 	}
+
+	pcf85063a_start(dev);
 
 	return 0;
 }
@@ -151,7 +156,7 @@ static int pcf85063a_cancel_alarm(const struct device *dev, uint8_t chan_id)
 
 	// Turn off all itnerrupts/timer mode
 	reg = 0;
-	mask = PCF85063A_TIMER_MODE_EN | PCF85063A_TIMER_MODE_INT_EN | PCF85063A_TIMER_MODE_INT_TI_TP;
+	mask = PCF85063A_TIMER_MODE_EN;
 
 	LOG_INF("mode 0x%x", reg);
 
@@ -189,6 +194,8 @@ static uint32_t pcf85063a_get_pending_int(const struct device *dev)
 		LOG_ERR("Unable to get RTC CTRL2 reg. (err %i)", ret);
 		return ret;
 	}
+
+	LOG_DBG("Reg %x", reg);
 
 	// Return 1 if interrupt. 0 if no flag.
 	return (reg & PCF85063A_CTRL2_TF) ? 1U : 0U;
