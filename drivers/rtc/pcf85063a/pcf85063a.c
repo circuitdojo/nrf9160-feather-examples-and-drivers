@@ -199,12 +199,7 @@ static uint32_t pcf85063a_get_top_value(const struct device *dev)
 	return 0;
 }
 
-static uint32_t pcf85063a_get_max_relative_alarm(const struct device *dev)
-{
-	return 0;
-}
-
-static const struct counter_driver_api pcf85063a_driver_api = {
+static const struct counter_driver_api pcf85063a_api = {
 	.start = pcf85063a_start,
 	.stop = pcf85063a_stop,
 	.get_value = pcf85063a_get_value,
@@ -213,18 +208,9 @@ static const struct counter_driver_api pcf85063a_driver_api = {
 	.set_top_value = pcf85063a_set_top_value,
 	.get_pending_int = pcf85063a_get_pending_int,
 	.get_top_value = pcf85063a_get_top_value,
-	.get_max_relative_alarm = pcf85063a_get_max_relative_alarm,
-};
-
-static const struct counter_config_info pcf85063_cfg_info = {
-	.max_top_value = 0xff,
-	.freq = 1,
-	.channels = 1,
 };
 
 // ARG_UNUSED(dev);
-
-static struct pcf85063a_data pcf85063a_data;
 
 int pcf85063a_init(const struct device *dev)
 {
@@ -257,6 +243,19 @@ int pcf85063a_init(const struct device *dev)
 	return 0;
 }
 
-DEVICE_DEFINE(pcf85063a, DT_INST_LABEL(0), pcf85063a_init, device_pm_control_nop, &pcf85063a_data,
-			  &pcf85063_cfg_info, POST_KERNEL, CONFIG_I2C_INIT_PRIORITY,
-			  &pcf85063a_driver_api);
+/* Main instantiation matcro */
+#define PCF85063A_DEFINE(inst)                                               \
+	static struct pcf85063a_data pcf85063a_data_##inst;                      \
+	static const struct counter_config_info pcf85063_cfg_info_##inst = {     \
+		.max_top_value = 0xff,                                               \
+		.freq = 1,                                                           \
+		.channels = 1,                                                       \
+	};                                                                       \
+	DEVICE_DT_INST_DEFINE(inst,                                              \
+						  pcf85063a_init, NULL,                              \
+						  &pcf85063a_data_##inst, &pcf85063_cfg_info_##inst, \
+						  POST_KERNEL, CONFIG_I2C_INIT_PRIORITY,             \
+						  &pcf85063a_api);
+
+/* Create the struct device for every status "okay"*/
+DT_INST_FOREACH_STATUS_OKAY(PCF85063A_DEFINE)
