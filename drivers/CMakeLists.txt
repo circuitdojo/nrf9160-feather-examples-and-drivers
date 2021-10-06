@@ -5,4 +5,4 @@
 #
 
 add_subdirectory(rtc)
-add_subdirectory(battery)
+add_subdirectory_ifdef(CONFIG_BATTERY_MEASUREMENT battery)

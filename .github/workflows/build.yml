@@ -1,0 +1,40 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: zephyrprojectrtos/ci:v0.18.4
+    strategy:
+      matrix:
+        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, gps, sms]
+        target: [circuitdojo_feather_nrf9160ns]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          path: nfed
+
+      - name: Initialize
+        working-directory: nfed
+        run: |
+          pip3 install -U west
+          west init -l .
+          west update
+          pip3 install -r ../zephyr/scripts/requirements-base.txt
+
+      - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
+        working-directory: nfed
+        run: |
+          west build -b ${{ matrix.target }} -s samples/${{ matrix.sample }} -p
+          mkdir -p .out
+          cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
+          cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
+
+      - name: Archive firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: firmware
+          path: nfed/.out/

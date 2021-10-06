@@ -3,4 +3,4 @@
 #
 
 zephyr_library()
-zephyr_library_sources_ifdef(CONFIG_BATTERY_MEASUREMENT battery.c)
+zephyr_library_sources(battery.c)

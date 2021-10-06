@@ -11,7 +11,7 @@ manifest:
       import: true
     - name: pyrinas
       url: https://github.com/pyrinas-iot/pyrinas-zephyr
-      revision: v1.5.x
+      revision: v1.6.x
       path: pyrinas
       import: true
   self:
