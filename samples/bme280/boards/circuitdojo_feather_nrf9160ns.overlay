@@ -1,0 +1,13 @@
+/*
+ * Copyright (c) 2020, Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&i2c1 {
+	bme280@77 {
+		compatible = "bosch,bme280";
+		reg = <0x77>;
+		label = "BME280";
+	};
+};
