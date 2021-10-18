@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2018 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+mainmenu "Application GPS Configuration"
+
+config GPS_CONTROL_FIX_TRY_TIME
+	int "Time in seconds to try to get fix"
+	default 60
+	help
+	  Amount of time the device will attempt to get position fix. Note that
+	  if the interval is interrupted by the device sending data, the timer
+	  is not reset, and the actual try time will be shortened due to
+	  the device not being in PSM mode all the time. If fix is not acquired
+	  before it times out, the device will try to get fix again in
+	  GPS_CONTROL_FIX_CHECK_INTERVAL seconds. If GPS_CONTROL_FIX_COUNT is reached
+	  before the full GPS_CONTROL_FIX_TRY_TIME has passed, the GPS will be stopped.
+
+config GPS_CONTROL_FIX_CHECK_INTERVAL
+	int "Interval in seconds to between check for position fix"
+	default 600
+	help
+	  The fix check interval gives the interval for how long it will go
+	  between each retry to achieve position fix. The actual fix time will
+	  vary with factors such as satellite coverage, surrounding buildings
+	  and landscape, PSM interval and activity time requested and granted
+	  by the network.

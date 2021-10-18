@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2021 Circuit Dojo LLC
+#
+
+mainmenu "App storage configuration"
+
+config APP_STORAGE_WIPE
+	bool "Option to clear the flash area before mounting"
+	help
+	  Use this to force an existing file system to be created.
+
+config APP_STORAGE_INIT_PRIORITY
+    int "Init priority for storage/settings config"
+    default 80

@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2021 Circuit Dojo LLC
+#
+
+mainmenu "Tracker Demo Application"
+
+rsource "src/gps/Kconfig"
+rsource "src/storage/Kconfig"
+
+source "Kconfig.zephyr"
