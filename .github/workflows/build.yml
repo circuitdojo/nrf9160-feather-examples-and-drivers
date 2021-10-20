@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, gps, sms]
-        target: [circuitdojo_feather_nrf9160ns]
+        target: [circuitdojo_feather_nrf9160_ns]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

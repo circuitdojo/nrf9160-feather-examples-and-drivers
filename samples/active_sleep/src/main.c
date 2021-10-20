@@ -20,7 +20,7 @@ void main(void)
 	__ASSERT(uart, "Failed to get the uart device");
 
 	/* Set power state */
-	pm_device_state_set(uart, PM_DEVICE_STATE_OFF, NULL, NULL);
+	pm_device_state_set(uart, PM_DEVICE_STATE_OFF);
 
 	/* Init modem library */
 	lte_lc_init();
