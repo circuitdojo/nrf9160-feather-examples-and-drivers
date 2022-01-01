@@ -8,7 +8,7 @@ jobs:
     container: zephyrprojectrtos/ci:v0.18.4
     strategy:
       matrix:
-        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, gps, sms]
+        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, gps, mfw_update, sms]
         target: [circuitdojo_feather_nrf9160_ns]
     steps:
       - name: Checkout
