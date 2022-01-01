@@ -56,9 +56,9 @@ static void trigger_handler(const struct device *dev,
 
 void main(void)
 {
-    const struct device *sensor = device_get_binding(DT_LABEL(DT_INST(0, st_lis2dh)));
+    const struct device *sensor = DEVICE_DT_GET(DT_INST(0, st_lis2dh));
 
-    if (sensor == NULL)
+    if (sensor == NULL || !device_is_ready(sensor))
     {
         printf("Could not get %s device\n",
                DT_LABEL(DT_INST(0, st_lis2dh)));
