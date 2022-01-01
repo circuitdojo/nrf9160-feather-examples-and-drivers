@@ -1,0 +1,9 @@
+/*
+ * Copyright (c) 2020 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&uart0 {
+	current-speed = <1000000>;
+};
