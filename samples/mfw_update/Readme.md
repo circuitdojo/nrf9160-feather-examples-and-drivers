@@ -42,7 +42,7 @@ With `python` installed you should be able to run the corresponding `update_mode
 python3 update_modem.py mfw_nrf9160_1.3.0.zip /dev/tty.SLAB_USBtoUART 1000000
 ```
 
-**Note:** `update_modem.py` is located in NFED under the `app/samples/mfw_update/` path.
+**Note:** `update_modem.py` is located in NFED under the `nfed/samples/mfw_update/` path.
 
 Here's what it should look like at the end of the process.
 

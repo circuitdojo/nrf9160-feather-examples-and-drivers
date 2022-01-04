@@ -31,7 +31,7 @@ Using the command window run **Zephyr Tools: Build**
 
 ![Build](../../img/build.png)
 
-If prompted select the project `path/to/your/project/app/samples/tracker` and type `circuitojo_feather_nrf9160_ns` as the target.
+If prompted select the project `path/to/your/project/nfed/samples/tracker` and type `circuitojo_feather_nrf9160_ns` as the target.
 
 ![Select project](../../img/select-project.png)
 
