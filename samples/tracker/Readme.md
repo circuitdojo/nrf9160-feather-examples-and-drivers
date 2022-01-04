@@ -19,7 +19,7 @@ This example is also configurable via the Golioth console or via `goliothctl` (G
 
 2. Initialize your repository using this Git url: `git@github.com:circuitdojo/golioth-demo.git` and the **Zephyr Tools: Init Repo** command
 
-	![Init repo](img/init-repo.png)
+	![Init repo](../../img/init-repo.png)
 
 	**Note:** It's best to select an empty folder to initialize the project to.
 
@@ -29,13 +29,13 @@ This example is also configurable via the Golioth console or via `goliothctl` (G
 
 Using the command window run **Zephyr Tools: Build**
 
-![Build](img/build.png)
+![Build](../../img/build.png)
 
 If prompted select the project `path/to/your/project/app/samples/tracker` and type `circuitojo_feather_nrf9160_ns` as the target.
 
-![Select project](img/select-project.png)
+![Select project](../../img/select-project.png)
 
-![Select target](img/select-target.png)
+![Select target](../../img/select-target.png)
 
 Then place the device into bootloader mode:
    1. Hold the MODE button
@@ -44,11 +44,11 @@ Then place the device into bootloader mode:
 
 Then, load using the **Zephyr Tools: Load via Bootloader** task.
 
-![Option for loading](img/load-via-newtmgr.png)
+![Option for loading](../../img/load-via-newtmgr.png)
 
 Pay attention to the progress in the bottom console.
 
-![Option for loading](img/load-via-newtmgr-progress.png)
+![Option for loading](../../img/load-via-newtmgr-progress.png)
 
 Once complete, the extension will reset your device and should start executing!
 
@@ -80,9 +80,9 @@ Make sure you enter the device IMEI and hex string PSK *exactly* otherwise your 
 
 You can then view the output using the **Zephyr Tools: Serial Monitor** command. You can also run **Zephyr Tools: Load via Booloader and Monitor** to both at the same time.
 
-![Serial monitor](img/serial-monitor.png)
+![Serial monitor](../../img/serial-monitor.png)
 
 Make sure you select the port that corresponds to your device. On Mac the serial port will be `/dev/tty.SLAB_USBtoUART`
 
-![Serial select](img/serial-select.png)
+![Serial select](../../img/serial-select.png)
 
