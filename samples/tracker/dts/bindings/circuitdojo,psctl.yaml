@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2021 Circuit Dojo LLC
+#
+# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+#
+
+description: Circuit Dojo - Power Supply Control - Device Tree Definition
+
+compatible: "circuitdojo,psctl"
+
+properties:
+    mode-gpios:
+      type: phandle-array
+      required: false
+      description: |
+        Mode swith between PWM and PWM/PFM mode.
+

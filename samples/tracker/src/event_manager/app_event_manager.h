@@ -1,16 +1,32 @@
-/**
- * @file app_event_manager.h
- * @author Jared Wolff (hello@jaredwolff.com)
- * @date 2021-07-20
+/*
+ * Copyright Circuit Dojo (c) 2021
  * 
- * @copyright Copyright Circuit Dojo (c) 2021
- * 
+ * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
 #ifndef _APP_EVENT_MANAGER_H
 #define _APP_EVENT_MANAGER_H
 
 #include <drivers/gps.h>
+
+#include <app_motion.h>
+#include <app_gps.h>
+
+/**
+ * @brief Max size of event queue
+ * 
+ */
+#define APP_EVENT_QUEUE_SIZE 24
+
+/**
+ * @brief Simplified macro for pushing an app event without data
+ * 
+ */
+#define APP_EVENT_MANAGER_PUSH(x)  \
+    struct app_event app_event = { \
+        .type = x,                 \
+    };                             \
+    app_event_manager_push(&app_event);
 
 /**
  * @brief Used to interact with different functionality
@@ -21,9 +37,16 @@ enum app_event_type
 
     APP_EVENT_CELLULAR_DISCONNECT,
     APP_EVENT_CELLULAR_CONNECTED,
-    APP_EVENT_GOLIOTH_CONNECTED,
+    APP_EVENT_BACKEND_CONNECTED,
+    APP_EVENT_BACKEND_ERROR,
+    APP_EVENT_BACKEND_DISCONNECTED,
     APP_EVENT_AGPS_REQUEST,
-    APP_EVENT_GPS_DATA
+    APP_EVENT_GPS_DATA,
+    APP_EVENT_GPS_TIMEOUT,
+    APP_EVENT_GPS_STARTED,
+    APP_EVENT_MOTION_EVENT,
+    APP_EVENT_MOTION_DATA,
+    APP_EVENT_ACTIVITY_TIMEOUT
 };
 
 /**
@@ -36,8 +59,10 @@ struct app_event
     enum app_event_type type;
     union
     {
-        struct gps_pvt *gps_data;
-        struct gps_agps_request *agps_request;
+        struct app_gps_data gps_data;
+        struct gps_agps_request agps_request;
+        struct app_motion_data motion_data;
+        int err;
     };
 };
 

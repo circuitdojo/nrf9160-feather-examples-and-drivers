@@ -7,20 +7,9 @@
 #include <zephyr.h>
 #include <modem/lte_lc.h>
 #include <devicetree.h>
-#include <drivers/uart.h>
-
-/* Static instance of uart */
-const static struct device *uart;
 
 void main(void)
 {
-
-	/* Get uart binding */
-	uart = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
-	__ASSERT(uart, "Failed to get the uart device");
-
-	/* Set power state */
-	pm_device_state_set(uart, PM_DEVICE_STATE_OFF);
 
 	/* Init modem library */
 	lte_lc_init();

@@ -46,3 +46,7 @@ The below instructions are also included in the above. If you already have NCS s
    ```
 
 2. Then run `west update` in your freshly created bash/command prompt session. This will fetch the nRF9160 Feather examples.
+
+## License
+
+Apache 2.0 applies to all samples except for the **tracker** sample. See [samples/tracker/LICENSE](samples/tracker/LICENSE) for more info. Some samples are based off of the nRF Connect SDK or Zephyr SDK. Full credit goes to those authors. See license information at the top of those files fore details.

@@ -4,24 +4,31 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-/**
- * @file app_gps.c
- * @author Jared Wolff (hello@jaredwolff.com)
- * @date 2021-07-20
+/*
+ * Copyright Circuit Dojo (c) 2021
  * 
- * @copyright Copyright Circuit Dojo (c) 2021
- * 
+ * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
 #include <zephyr.h>
 #include <stdio.h>
 #include <date_time.h>
+#include <modem/agps.h>
+#include <drivers/gpio.h>
 
 #include <app_gps.h>
 #include <app_event_manager.h>
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(app_gps);
+
+/* Power supply mode control */
+#define PSCTL_LABEL DT_NODELABEL(psctl)
+#define MODE_PIN DT_GPIO_PIN_BY_IDX(PSCTL_LABEL, mode_gpios, 0)
+#define MODE_FLAGS DT_GPIO_FLAGS_BY_IDX(PSCTL_LABEL, mode_gpios, 0)
+
+/* GPS device. Used to identify the GPS driver in the sensor API. */
+static const struct device *gps_dev, *gpio;
 
 /* GPS device. Used to identify the GPS driver in the sensor API. */
 static const struct device *gps_dev;
@@ -39,16 +46,38 @@ static void gps_event_handler(const struct device *dev, struct gps_event *evt)
     switch (evt->type)
     {
     case GPS_EVT_SEARCH_STARTED:
+    {
         LOG_DBG("GPS_EVT_SEARCH_STARTED");
         state = APP_GPS_STATE_STARTED;
-        break;
+
+#if defined(CONFIG_GPS_POWER_SUPPLY_MODE_OVERRIDE)
+        gpio_pin_set(gpio, MODE_PIN, true);
+#endif
+
+        /* Push event */
+        APP_EVENT_MANAGER_PUSH(APP_EVENT_GPS_STARTED);
+    }
+    break;
     case GPS_EVT_SEARCH_STOPPED:
         LOG_DBG("GPS_EVT_SEARCH_STOPPED");
         state = APP_GPS_STATE_STOPPED;
+
+#if defined(CONFIG_GPS_POWER_SUPPLY_MODE_OVERRIDE)
+        gpio_pin_set(gpio, MODE_PIN, false);
+#endif
         break;
     case GPS_EVT_SEARCH_TIMEOUT:
+    {
         LOG_DBG("GPS_EVT_SEARCH_TIMEOUT");
-        break;
+
+#if defined(CONFIG_GPS_POWER_SUPPLY_MODE_OVERRIDE)
+        gpio_pin_set(gpio, MODE_PIN, false);
+#endif
+
+        /* Push event */
+        APP_EVENT_MANAGER_PUSH(APP_EVENT_GPS_TIMEOUT);
+    }
+    break;
     case GPS_EVT_PVT:
         /* Don't spam logs */
         break;
@@ -56,6 +85,10 @@ static void gps_event_handler(const struct device *dev, struct gps_event *evt)
         LOG_DBG("GPS_EVT_PVT_FIX");
         time_set(&evt->pvt);
         data_send(&evt->pvt);
+
+#if defined(CONFIG_GPS_POWER_SUPPLY_MODE_OVERRIDE)
+        gpio_pin_set(gpio, MODE_PIN, false);
+#endif
         break;
     case GPS_EVT_NMEA:
         /* Don't spam logs */
@@ -78,8 +111,7 @@ static void gps_event_handler(const struct device *dev, struct gps_event *evt)
         };
 
         /* Allocate on heap */
-        app_event.agps_request = k_malloc(sizeof(struct gps_agps_request));
-        memcpy(app_event.agps_request, &evt->agps_request, sizeof(struct gps_agps_request));
+        memcpy(&app_event.agps_request, &evt->agps_request, sizeof(struct gps_agps_request));
 
         /* Push it to the limit */
         app_event_manager_push(&app_event);
@@ -109,11 +141,8 @@ static void data_send(struct gps_pvt *gps_data)
     struct app_event app_event = {
         .type = APP_EVENT_GPS_DATA};
 
-    /* Allocate and set GPS data */
-    app_event.gps_data = k_malloc(sizeof(struct gps_pvt));
-
     /* Copy the data contents */
-    memcpy(app_event.gps_data, gps_data, sizeof(struct gps_pvt));
+    memcpy(&app_event.gps_data.data, gps_data, sizeof(struct gps_pvt));
 
     err = app_event_manager_push(&app_event);
     if (err)
@@ -171,6 +200,18 @@ int app_gps_setup(void)
         return err;
     }
 
+    /* Get GPIO */
+    gpio = DEVICE_DT_GET(DT_NODELABEL(gpio0));
+    if (gpio == NULL || !device_is_ready(gpio))
+    {
+        LOG_ERR("Error: unable to get gpio0 device binding.\n");
+        return -EEXIST;
+    }
+
+#if defined(CONFIG_GPS_POWER_SUPPLY_MODE_OVERRIDE)
+    gpio_pin_configure(gpio, MODE_PIN, GPIO_OUTPUT_INACTIVE | MODE_FLAGS);
+#endif
+
     return 0;
 }
 
@@ -178,7 +219,7 @@ int app_gps_start(void)
 {
     int err;
 
-    /* Return an error if it's already running */
+    /* Return already started error */
     if (state == APP_GPS_STATE_STARTED)
     {
         return -EALREADY;
@@ -186,7 +227,7 @@ int app_gps_start(void)
 
     /* Config w/ timeout */
     struct gps_config gps_cfg = {
-        .nav_mode = GPS_NAV_MODE_PERIODIC,
+        .nav_mode = GPS_NAV_MODE_SINGLE_FIX,
         .power_mode = GPS_POWER_MODE_DISABLED,
         .timeout = CONFIG_GPS_CONTROL_FIX_TRY_TIME,
         .interval =
@@ -205,15 +246,51 @@ int app_gps_start(void)
     return 0;
 }
 
+/* Converts the A-GPS data request from GPS driver to GNSS API format. */
+static void agps_request_convert(
+    struct nrf_modem_gnss_agps_data_frame *dest,
+    const struct gps_agps_request *src)
+{
+    dest->sv_mask_ephe = src->sv_mask_ephe;
+    dest->sv_mask_alm = src->sv_mask_alm;
+    dest->data_flags = 0;
+    if (src->utc)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_GPS_UTC_REQUEST;
+    }
+    if (src->klobuchar)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_KLOBUCHAR_REQUEST;
+    }
+    if (src->nequick)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_NEQUICK_REQUEST;
+    }
+    if (src->system_time_tow)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_SYS_TIME_AND_SV_TOW_REQUEST;
+    }
+    if (src->position)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_POSITION_REQUEST;
+    }
+    if (src->integrity)
+    {
+        dest->data_flags |= NRF_MODEM_GNSS_AGPS_INTEGRITY_REQUEST;
+    }
+}
+
 int app_gps_agps_request(struct gps_agps_request *req)
 {
-    int err;
+    struct nrf_modem_gnss_agps_data_frame agps_request;
 
-    err = gps_agps_request_send(*req, GPS_SOCKET_NOT_PROVIDED);
+    agps_request_convert(&agps_request, req);
+
+    int err = agps_request_send(agps_request, AGPS_SOCKET_NOT_PROVIDED);
+
     if (err)
     {
-        LOG_WRN("Failed to request A-GPS data, error: %d", err);
-        LOG_WRN("This is expected to fail if we are not in a connected state");
+        LOG_ERR("Failed to request A-GPS data, error: %d", err);
         return err;
     }
 

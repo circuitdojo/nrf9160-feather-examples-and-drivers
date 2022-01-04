@@ -1,9 +1,16 @@
 #
 # Copyright (c) 2021 Circuit Dojo LLC
 #
+# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+#
 
 mainmenu "Tracker Demo Application"
 
+config DISCONNECT_FOR_FIRST_FIX
+	bool "Major verison number"
+	default false
+
+rsource "src/version/Kconfig"
 rsource "src/gps/Kconfig"
 rsource "src/storage/Kconfig"
 

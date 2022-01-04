@@ -1,0 +1,27 @@
+menu "App Version"
+
+config APP_VERSION_MAJOR
+	int "Major verison number"
+	default 1
+
+config APP_VERSION_MINOR
+	int "Minor verison number"
+	default 0
+
+config APP_VERSION_PATCH
+	int "Patch verison number"
+	default 0
+
+config APP_VERSION_COMMIT
+	int "Commit verison number"
+	default 0
+
+config APP_VERSION_HASH
+	string "Version hash provided by Git"
+	default ""
+
+config APP_VERSION
+	string "Full version string provided by Git"
+	default "1.0.0"
+
+endmenu

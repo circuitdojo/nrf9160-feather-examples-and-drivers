@@ -1,6 +1,8 @@
 #
 # Copyright (c) 2021 Circuit Dojo LLC
 #
+# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+#
 
 mainmenu "App storage configuration"
 

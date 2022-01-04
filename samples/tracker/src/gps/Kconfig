@@ -4,6 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+#
+# Copyright (c) 2021 Circuit Dojo LLC
+#
+# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+#
+
 mainmenu "Application GPS Configuration"
 
 config GPS_CONTROL_FIX_TRY_TIME
@@ -27,3 +33,7 @@ config GPS_CONTROL_FIX_CHECK_INTERVAL
 	  vary with factors such as satellite coverage, surrounding buildings
 	  and landscape, PSM interval and activity time requested and granted
 	  by the network.
+
+config GPS_POWER_SUPPLY_MODE_OVERRIDE
+	bool "Disable PFM mode during GPS position acquisition"
+	default true

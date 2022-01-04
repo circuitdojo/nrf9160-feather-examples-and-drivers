@@ -1,10 +1,7 @@
-/**
- * @file app_storage.c
- * @author Jared Wolff (hello@jaredwolff.com)
- * @date 2021-07-20
+/*
+ * Copyright Circuit Dojo (c) 2021
  * 
- * @copyright Copyright Circuit Dojo (c) 2021
- * 
+ * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause 
  */
 
 /* external storage initialization */

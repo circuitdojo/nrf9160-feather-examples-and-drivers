@@ -1,16 +1,19 @@
-/**
- * @file app_gps.h
- * @author Jared Wolff (hello@jaredwolff.com)
- * @date 2021-07-20
+/*
+ * Copyright Circuit Dojo (c) 2021
  * 
- * @copyright Copyright Circuit Dojo (c) 2021
- * 
+ * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
 #ifndef _APP_GPS_H
 #define _APP_GPS_H
 
 #include <drivers/gps.h>
+
+struct app_gps_data
+{
+    struct gps_pvt data;
+    int64_t ts;
+};
 
 /**
  * @brief Used to track GPS state
