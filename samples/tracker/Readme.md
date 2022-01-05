@@ -54,6 +54,8 @@ Once complete, the extension will reset your device and should start executing!
 
 ## Update credentials in modem (one time only)
 
+The current best way to provision your device is by loading the `at_client` sample *first*, then run the following commands and then continue loading the tracker sample.
+
 Open a terminal or [LTE Link Monitor](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_link_monitor%2FUG%2Flink_monitor%2Flm_intro.html) you can execute the following commands one at a time:
 
 ```
@@ -63,16 +65,11 @@ AT%CMNG=0,1,3,"<HEX STRING PSK>"
 AT+CFUN=0
 ```
 
-**Important note:** your PSK must be in hex string format. You can use a site [like this one](https://www.rapidtables.com/convert/number/ascii-to-hex.html) to convert it first.
+**Important note:** your PSK must be in hex string format. You can use a site [like this one](https://www.rapidtables.com/convert/number/ascii-to-hex.html) to convert it first. Make sure you select **Output delimeter** as **None**.
 
 Example:
 
-```
-AT+CFUN=4
-AT%CMNG=0,1,4,"device-id@air-quality-wing"
-AT%CMNG=0,1,3,"376230346333762303463337623034633376230346333762303463337623034633"
-AT+CFUN=1
-```
+![Setting credentials](../../img/set-credentials.png)
 
 Make sure you enter the device IMEI and hex string PSK *exactly* otherwise your device will fail to authenticate with Golioth!
 

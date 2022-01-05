@@ -26,6 +26,7 @@ static void trigger_handler(const struct device *dev,
 
     int64_t uptime = k_uptime_get();
 
+    /* Prevent constant triggers */
     if (uptime > (last_trigger + m_config.trigger_interval * MSEC_PER_SEC) || last_trigger == 0)
     {
 
