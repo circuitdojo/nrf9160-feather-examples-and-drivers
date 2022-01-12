@@ -60,6 +60,30 @@ bool app_backend_is_connected()
     return is_connected;
 }
 
+int app_backend_stream(char *p_topic, uint8_t *p_data, size_t len)
+{
+    int err;
+
+    char path[128];
+    err = snprintf(path, sizeof(path), ".s/%s", p_topic);
+    if (err < 0)
+    {
+        LOG_WRN("Failed to encode path. Err: %i", err);
+        return err;
+    }
+
+    err = golioth_lightdb_set(client,
+                              path,
+                              COAP_CONTENT_FORMAT_APP_CBOR,
+                              p_data, len);
+    if (err)
+    {
+        LOG_WRN("Failed to stream data: %i", err);
+    }
+
+    return err;
+}
+
 int app_backend_publish(char *p_topic, uint8_t *p_data, size_t len)
 {
     int err;
@@ -78,7 +102,7 @@ int app_backend_publish(char *p_topic, uint8_t *p_data, size_t len)
                               p_data, len);
     if (err)
     {
-        LOG_WRN("Failed to gps data: %d", err);
+        LOG_WRN("Failed to publish data: %i", err);
     }
 
     return err;

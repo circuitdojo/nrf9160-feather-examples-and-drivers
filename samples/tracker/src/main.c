@@ -444,6 +444,13 @@ int main(void)
                 LOG_ERR("Unable to publish. Err: %i", err);
             }
 
+            /* Stream gps data */
+            err = app_backend_publish("gps", buf, size);
+            if (err)
+            {
+                LOG_ERR("Unable to publish. Err: %i", err);
+            }
+
             /* Start (in)activity timer */
             k_timer_start(&activity_timer, K_SECONDS(10), K_NO_WAIT);
 

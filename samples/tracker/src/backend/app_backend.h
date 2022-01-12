@@ -29,6 +29,16 @@ int app_backend_init(char *client_id, size_t client_id_len);
 int app_backend_publish(char *topic, uint8_t *p_data, size_t len);
 
 /**
+ * @brief Publish to the backend stream  (if possible)
+ * 
+ * @param topic topic string used
+ * @param p_data pointer to data structure
+ * @param len length of data
+ * @return int 0 on success
+ */
+int app_backend_stream(char *topic, uint8_t *p_data, size_t len);
+
+/**
  * @brief Connect to the backend
  * 
  * @return int 0 on success
