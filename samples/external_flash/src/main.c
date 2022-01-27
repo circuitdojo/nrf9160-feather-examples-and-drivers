@@ -14,16 +14,62 @@
 #include <fs/fs.h>
 #include <fs/littlefs.h>
 #include <storage/flash_map.h>
+#include <settings/settings.h>
 
 /* Matches LFS_NAME_MAX */
 #define MAX_PATH_LEN 255
+
+/* Config */
+struct system_config
+{
+	int32_t update_interval;
+	int32_t status;
+};
+
+static struct system_config cfg = {
+	.update_interval = 0,
+	.status = 0,
+};
 
 FS_LITTLEFS_DECLARE_DEFAULT_CONFIG(storage);
 static struct fs_mount_t lfs_storage_mnt = {
 	.type = FS_LITTLEFS,
 	.fs_data = &storage,
-	.storage_dev = (void *)FLASH_AREA_ID(external_flash),
+	.storage_dev = (void *)FLASH_AREA_ID(littlefs_storage),
 	.mnt_point = "/lfs",
+};
+
+static int test_settings_set(const char *name, size_t len,
+							 settings_read_cb read_cb, void *cb_arg)
+{
+	const char *next;
+	int rc;
+
+	if (settings_name_steq(name, "entry", &next) && !next)
+	{
+		if (len != sizeof(cfg))
+		{
+			return -EINVAL;
+		}
+
+		rc = read_cb(cb_arg, &cfg, sizeof(cfg));
+		if (rc >= 0)
+		{
+			/* key-value pair was properly read.
+             * rc contains value length.
+             */
+			return 0;
+		}
+		/* read-out error */
+		return rc;
+	}
+
+	return -ENOENT;
+}
+
+struct settings_handler my_config = {
+	.name = "config",
+	.h_set = test_settings_set,
 };
 
 void main(void)
@@ -117,6 +163,22 @@ void main(void)
 
 	rc = fs_close(&file);
 	printk("%s close: %d\n", fname, rc);
+
+	/* Using settings subsystem */
+	settings_subsys_init();
+	settings_register(&my_config);
+	settings_load();
+
+	printk("Settings: before: status %i, interval: %i\n", cfg.status, cfg.update_interval);
+
+	cfg.status = cfg.status += 1;
+	cfg.update_interval = 20;
+
+	printk("Settings: after: status %i, interval: %i\n", cfg.status, cfg.update_interval);
+
+	settings_save_one("config/entry", &cfg, sizeof(cfg));
+
+	/* End of setting related items */
 
 out:
 	rc = fs_unmount(mp);
