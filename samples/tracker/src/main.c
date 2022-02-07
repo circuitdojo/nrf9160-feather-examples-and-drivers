@@ -505,7 +505,7 @@ int main(void)
             }
 
             /* Start (in)activity timer */
-            k_timer_start(&activity_timer, K_SECONDS(10), K_NO_WAIT);
+            k_timer_start(&activity_timer, K_SECONDS(1), K_NO_WAIT);
 
             break;
         }

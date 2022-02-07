@@ -1,6 +1,6 @@
 /*
  * Copyright Circuit Dojo (c) 2021
- * 
+ *
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
@@ -45,13 +45,15 @@ void golioth_on_connect(struct golioth_client *client)
 /* Public functions*/
 int app_backend_connect()
 {
-    /* TODO */
+    golioth_system_client_start();
+
     return 0;
 }
 
 int app_backend_disconnect()
 {
-    /* TODO */
+    golioth_system_client_stop();
+
     return 0;
 }
 

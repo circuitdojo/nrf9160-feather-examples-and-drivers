@@ -7,7 +7,7 @@
 
 /*
  * Copyright Circuit Dojo (c) 2021
- * 
+ *
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
@@ -218,6 +218,9 @@ int app_battery_sample(void)
 		if (rc == 0)
 		{
 			int32_t val = ddp->raw;
+
+			if (val < 0)
+				val = 1;
 
 			adc_raw_to_millivolts(adc_ref_internal(ddp->adc),
 								  ddp->adc_cfg.gain,
