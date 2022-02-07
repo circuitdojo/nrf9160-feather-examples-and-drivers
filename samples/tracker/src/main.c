@@ -6,7 +6,7 @@
 
 /*
  * Copyright Circuit Dojo (c) 2021
- * 
+ *
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
@@ -26,6 +26,7 @@
 #include <app_gps.h>
 #include <app_codec.h>
 #include <app_event_manager.h>
+#include <app_indication.h>
 #include <app_backend.h>
 #include <app_motion.h>
 #include <app_battery.h>
@@ -66,8 +67,8 @@ K_TIMER_DEFINE(gps_search_timer, gps_expiry_function, NULL);
 
 /**
  * @brief LTE event handler
- * 
- * @param evt 
+ *
+ * @param evt
  */
 static void lte_handler(const struct lte_lc_evt *const evt)
 {
@@ -184,12 +185,20 @@ int main(void)
     /* Show version */
     LOG_INF("Tracker. Version: %s", CONFIG_APP_VERSION);
 
+    /* Set up indication */
+    err = app_indication_init();
+    if (err)
+        LOG_ERR("Unable to setup indication. Err: %i", err);
+
+#ifdef CONFIG_USE_LED_INDICATION
+    /* Glowing LED */
+    app_indication_set(app_indication_glow);
+#endif
+
     /* Setup gps */
     err = app_gps_setup();
     if (err)
-    {
         LOG_ERR("Unable to setup GPS. Err: %i", err);
-    }
 
     /* Configure dfu handler*/
     nrf_modem_lib_dfu_handler();
@@ -401,6 +410,11 @@ int main(void)
             uint8_t buf[256];
             size_t size = 0;
 
+#ifdef CONFIG_USE_LED_INDICATION
+            /* Solid LED */
+            app_indication_set(app_indication_solid);
+#endif
+
             /* Set motion time to now -- avoids motion trigger */
             app_motion_set_trigger_time(k_uptime_get());
 
@@ -445,10 +459,10 @@ int main(void)
             }
 
             /* Stream gps data */
-            err = app_backend_publish("gps", buf, size);
+            err = app_backend_stream("gps", buf, size);
             if (err)
             {
-                LOG_ERR("Unable to publish. Err: %i", err);
+                LOG_ERR("Unable to stream. Err: %i", err);
             }
 
             /* Start (in)activity timer */

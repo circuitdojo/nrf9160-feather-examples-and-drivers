@@ -10,6 +10,10 @@ config DISCONNECT_FOR_FIRST_FIX
 	bool "Major verison number"
 	default false
 
+config USE_LED_INDICATION
+	bool "Turns on default LED indication events"
+	default true
+
 rsource "src/version/Kconfig"
 rsource "src/gps/Kconfig"
 rsource "src/storage/Kconfig"
