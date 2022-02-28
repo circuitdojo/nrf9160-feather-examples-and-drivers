@@ -323,9 +323,13 @@ static const struct sensor_driver_api battery_measurement_api = {
 	.channel_get = &battery_measurement_channel_get,
 };
 
-static struct battery_measurement_data battery_measurement_data;
+/* Main instantiation matcro */
+#define BATTERY_VOLTAGE_DEFINE(inst)                                           \
+	static struct battery_measurement_data battery_measurement_data_##inst;    \
+	DEVICE_DT_INST_DEFINE(inst,                                                \
+						  battery_measurement_init, NULL,                      \
+						  &battery_measurement_data_##inst, NULL, POST_KERNEL, \
+						  CONFIG_SENSOR_INIT_PRIORITY, &battery_measurement_api);
 
-DEVICE_DEFINE(voltage_divider, DT_INST_LABEL(0),
-			  battery_measurement_init, NULL,
-			  &battery_measurement_data, NULL, POST_KERNEL,
-			  CONFIG_SENSOR_INIT_PRIORITY, &battery_measurement_api);
+/* Create the struct device for every status "okay"*/
+DT_INST_FOREACH_STATUS_OKAY(BATTERY_VOLTAGE_DEFINE)
