@@ -1,0 +1,34 @@
+/ {
+    pwmleds {
+        compatible = "pwm-leds";
+        status = "okay";
+
+        red_pwm_led: led_pwm_0 {
+            status = "okay";
+            pwms = <&pwm0 13>;
+            label = "Red PWM LED";
+        };
+
+        green_pwm_led: led_pwm_1 {
+            status = "okay";
+            pwms = <&pwm0 14>;
+            label = "Green PWM LED";
+        };
+
+        blue_pwm_led: led_pwm_2 {
+            status = "okay";
+            pwms = <&pwm0 15>;
+            label = "Blue PWM LED";
+        };
+    };
+};
+
+&pwm0 {
+    status = "okay";
+    ch0-pin = <13>;
+    ch0-inverted;
+    ch1-pin = <14>;
+    ch1-inverted;
+    ch2-pin = <15>;
+    ch2-inverted;
+};
