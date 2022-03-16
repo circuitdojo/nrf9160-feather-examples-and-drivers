@@ -214,6 +214,9 @@ static int battery_sample(int *battery_voltage)
 
 		int32_t val = ddp->raw;
 
+		if (val < 0)
+			val = 1;
+
 		adc_raw_to_millivolts(adc_ref_internal(ddp->adc),
 							  ddp->adc_cfg.gain,
 							  sp->resolution,
