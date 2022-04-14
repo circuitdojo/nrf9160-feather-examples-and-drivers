@@ -1,0 +1,3 @@
+&i2c1 {
+	zephyr,concat-buf-size = <256>;
+};

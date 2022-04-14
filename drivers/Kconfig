@@ -6,5 +6,4 @@
 
 comment "Device Drivers"
 
-rsource "rtc/Kconfig"
 rsource "battery/Kconfig"

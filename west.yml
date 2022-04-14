@@ -23,6 +23,11 @@ manifest:
       revision: v1.7.x
       path: pyrinas
       import: true
+    # RTC Driver
+    - name: pcf85063a
+      url: https://github.com/circuitdojo/pcf85063a
+      revision: master
+      path: pcf85063a
   self:
     # This repository should be cloned to nrf9160-feather
     path: nfed

@@ -56,3 +56,6 @@ version.conf
 build
 sparkfun
 .vscode
+
+# Extension related
+log-*.txt
