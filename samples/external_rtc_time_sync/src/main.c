@@ -139,4 +139,9 @@ void main(void)
 
 	/* Print out the current time */
 	print_date_time(&future_time);
+
+	/* Convert back to timestamp */
+	uint64_t future_ts = mktime(&future_time);
+
+	LOG_INF("UTC Unix Epoc: %lld", future_ts);
 }
