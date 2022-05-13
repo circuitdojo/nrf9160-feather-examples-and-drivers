@@ -1,4 +1,4 @@
-# Example application-specific west.yml, using manifest imports.
+# Import requirements for nRF9160 Feather Examples and Drivers
 manifest:
   remotes:
     - name: nrfconnect
@@ -8,15 +8,27 @@ manifest:
       repo-path: sdk-nrf
       remote: nrfconnect
       revision: v1.7.1
-      import: true
+      import: 
+        name-blocklist:
+          - matter
+          - nrf-802154
+          - cjson
+          - openthread
+          - cmock
+          - unity
+          - cddl-gen
+          - homekit
+          - loramac-node
+          - lz4
+          - lvgl
+          - mipi-sys-t
+          - nanopb
     # Golioth backend
     - name: golioth
       path: modules/lib/golioth
       revision: main
-      url: https://github.com/golioth/zephyr-sdk.git
-      import:
-        name-allowlist:
-          - qcbor
+      url: https://github.com/golioth/golioth-zephyr-sdk
+      import: west-external.yml
     # Pyrinas backend
     - name: pyrinas
       url: https://github.com/pyrinas-iot/pyrinas-zephyr
