@@ -225,13 +225,13 @@ static int battery_sample(int *battery_voltage)
 		if (dcp->output_ohm != 0)
 		{
 			*battery_voltage = val * (uint64_t)dcp->full_ohm / dcp->output_ohm;
-			LOG_INF("raw %u ~ %u mV => %d mV",
+			LOG_DBG("raw %u ~ %u mV => %d mV",
 					ddp->raw, val, rc);
 		}
 		else
 		{
 			*battery_voltage = val;
-			LOG_INF("raw %u ~ %u mV", ddp->raw, val);
+			LOG_DBG("raw %u ~ %u mV", ddp->raw, val);
 		}
 	}
 
