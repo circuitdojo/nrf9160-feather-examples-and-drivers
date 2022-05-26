@@ -59,3 +59,6 @@ mfw_nrf9160_1.3.0
 OK
 ```
 
+## Credit
+
+100% of the credit for this sample is to Nordic Semiconductor. Original can be found in `nrf/samples/nrf9160/fmfu_smp_svr`

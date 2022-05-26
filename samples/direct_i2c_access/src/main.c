@@ -50,7 +50,7 @@ void main(void)
         return;
     }
 
-    printf("CTRL10 set to default.\n");
+    printf("CTRL0 set to default.\n");
 
     /* Update a bit in CTRL1 */
     /* (This will read, update and write back)*/

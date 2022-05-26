@@ -22,7 +22,6 @@ manifest:
           - lz4
           - lvgl
           - mipi-sys-t
-          - nanopb
     # Golioth backend
     - name: golioth
       path: modules/lib/golioth
