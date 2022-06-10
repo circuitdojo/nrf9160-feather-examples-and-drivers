@@ -32,7 +32,7 @@ const struct device *led;
 const struct device *gpio;
 
 /* Worker for checking button after 2 seconds */
-static struct k_delayed_work button_press_work;
+static struct k_work_delayable button_press_work;
 
 /* LED helpers, which use the led0 devicetree alias if it's available. */
 static const struct device *initialize_led(void);
@@ -77,7 +77,7 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb,
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 
 	/* Schedule work for 2 seconds to see if the button is still pressed */
-	k_delayed_work_submit(&button_press_work, K_SECONDS(2));
+	k_work_schedule(&button_press_work, K_SECONDS(2));
 
 	/*Set LED on*/
 	gpio_pin_set(led, LED0_GPIO_PIN, 0);
@@ -127,7 +127,7 @@ void main(void)
 	led = initialize_led();
 
 	/* Init work function */
-	k_delayed_work_init(&button_press_work, button_press_work_fn);
+	k_work_init_delayable(&button_press_work, button_press_work_fn);
 
 	printk("Press the button\n");
 	while (1)

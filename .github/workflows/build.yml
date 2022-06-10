@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.18.4
+    container: zephyrprojectrtos/ci:v0.23.3
     strategy:
       matrix:
         sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, gps, led_pwm, mfw_update, nanopb, sms]

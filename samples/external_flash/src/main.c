@@ -171,7 +171,7 @@ void main(void)
 
 	printk("Settings: before: status %i, interval: %i\n", cfg.status, cfg.update_interval);
 
-	cfg.status = cfg.status += 1;
+	cfg.status += 1;
 	cfg.update_interval = 20;
 
 	printk("Settings: after: status %i, interval: %i\n", cfg.status, cfg.update_interval);

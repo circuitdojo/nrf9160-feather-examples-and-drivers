@@ -8,6 +8,10 @@
 	};
 };
 
+&gpio0 {
+	sense-edge-mask = <0xffff>;
+};
+
 &uart0 {
 	status = "okay";
 	current-speed = <115200>;
