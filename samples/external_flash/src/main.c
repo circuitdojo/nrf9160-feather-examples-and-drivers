@@ -56,8 +56,8 @@ static int test_settings_set(const char *name, size_t len,
 		if (rc >= 0)
 		{
 			/* key-value pair was properly read.
-             * rc contains value length.
-             */
+			 * rc contains value length.
+			 */
 			return 0;
 		}
 		/* read-out error */
@@ -139,6 +139,7 @@ void main(void)
 
 	struct fs_file_t file;
 
+	fs_file_t_init(&file);
 	rc = fs_open(&file, fname, FS_O_CREATE | FS_O_RDWR);
 	if (rc < 0)
 	{
@@ -171,7 +172,7 @@ void main(void)
 
 	printk("Settings: before: status %i, interval: %i\n", cfg.status, cfg.update_interval);
 
-	cfg.status = cfg.status += 1;
+	cfg.status += 1;
 	cfg.update_interval = 20;
 
 	printk("Settings: after: status %i, interval: %i\n", cfg.status, cfg.update_interval);
