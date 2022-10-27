@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/ {
+    zephyr,user {
+        latch-en-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+    };
+
+    leds {
+        compatible = "gpio-leds";
+        blue_led: led_0 {
+            gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+            label = "Blue LED (D7)";
+        };
+    };
+};
+
 &gpio0 {
-	sense-edge-mask = <0xffff>;
-};
-
-&uart0 {
-	/delete-property/ rx-pin;
-};
-
-&i2c1 {
-	lis2dh: lis2dh@18 {
-		compatible = "st,lis2dh";
-		label = "LIS2DH";
-		reg = <0x18>;
-		/delete-property/ irq-gpios;
-		disconnect-sdo-sa0-pull-up;
-	};
+    sense-edge-mask = <0xffff>;
 };
