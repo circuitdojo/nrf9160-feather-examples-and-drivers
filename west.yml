@@ -25,7 +25,7 @@ manifest:
     # Golioth backend
     - name: golioth
       path: modules/lib/golioth
-      revision: main
+      revision: 5fb65ba35120a2a8da3dd28153a6131daea6e184
       url: https://github.com/golioth/golioth-zephyr-sdk
       import: west-external.yml
     # Pyrinas backend
@@ -37,7 +37,7 @@ manifest:
     # RTC Driver
     - name: pcf85063a
       url: https://github.com/circuitdojo/pcf85063a
-      revision: master
+      revision: v1.9.x
       path: pcf85063a
   self:
     # This repository should be cloned to nrf9160-feather

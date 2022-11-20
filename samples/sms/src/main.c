@@ -9,7 +9,7 @@
 #include <string.h>
 #include <zephyr.h>
 #include <drivers/gpio.h>
-#include <modem/at_cmd.h>
+#include <nrf_modem_at.h>
 
 /* Switch */
 #define SW0_NODE DT_ALIAS(sw0)
@@ -51,8 +51,8 @@ static void sms_work_fn(struct k_work *work)
 
 		printk("%s\r\n", at_commands[i]);
 
-		if ((err = at_cmd_write_with_callback(at_commands[i],
-											  at_cmd_handler)) != 0)
+		if ((err = nrf_modem_at_cmd_async(at_commands[i],
+										  at_cmd_handler)) != 0)
 		{
 			printk("Error sending: %s. Error: %i.", at_commands[i], err);
 		}

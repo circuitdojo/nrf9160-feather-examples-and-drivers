@@ -14,7 +14,7 @@
 #include <date_time.h>
 #include <modem/lte_lc.h>
 #include <modem/nrf_modem_lib.h>
-#include <drivers/rtc/pcf85063a.h>
+#include <drivers/counter/pcf85063a.h>
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(main);
