@@ -10,9 +10,11 @@ Zephyr examples and drivers for the nRF9160 Feather.
    * [Windows](https://docs.jaredwolff.com/nrf9160-sdk-setup-windows.html)
    * [Linux](https://docs.jaredwolff.com/nrf9160-sdk-setup-linux.html)
 
-2. Initialize your repository using this Git url: `git@github.com:circuitdojo/nrf9160-feather-examples-and-drivers.git` and the **Zephyr Tools: Init Repo** command
+2. Initialize your repository using this Git url: `https://github.com/circuitdojo/nrf9160-feather-examples-and-drivers.git` and the **Zephyr Tools: Init Repo** command
 
 	![Init repo](img/init-repo.png)
+
+    **Note:** It is recommended to check out the default branch (simply press enter)
 
 	**Note:** It's best to select an empty folder to initialize the project to.
 
