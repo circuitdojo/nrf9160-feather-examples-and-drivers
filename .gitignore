@@ -56,6 +56,7 @@ version.conf
 build
 sparkfun
 .vscode
+twister-out*
 
 # Extension related
 log-*.txt
