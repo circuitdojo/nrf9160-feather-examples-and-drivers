@@ -10,26 +10,25 @@
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
-#include <zephyr.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <zephyr.h>
 
-#include <modem/lte_lc.h>
-#include <modem/nrf_modem_lib.h>
-#include <modem/at_cmd.h>
-#include <modem/at_notif.h>
-#include <modem/modem_info.h>
-#include <nrf_modem.h>
 #include <date_time.h>
+#include <modem/lte_lc.h>
+#include <modem/modem_info.h>
+#include <modem/nrf_modem_lib.h>
+#include <nrf_modem.h>
+#include <nrf_modem_at.h>
 #include <power/reboot.h>
 
-#include <app_gps.h>
+#include <app_backend.h>
+#include <app_battery.h>
 #include <app_codec.h>
 #include <app_event_manager.h>
+#include <app_gps.h>
 #include <app_indication.h>
-#include <app_backend.h>
 #include <app_motion.h>
-#include <app_battery.h>
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(app_main);
@@ -89,7 +88,9 @@ static void lte_handler(const struct lte_lc_evt *const evt)
         APP_EVENT_MANAGER_PUSH(APP_EVENT_CELLULAR_CONNECTED);
 
         LOG_DBG("Network registration status: %s",
-                evt->nw_reg_status == LTE_LC_NW_REG_REGISTERED_HOME ? "Connected - home network" : "Connected - roaming");
+                evt->nw_reg_status == LTE_LC_NW_REG_REGISTERED_HOME
+                    ? "Connected - home network"
+                    : "Connected - roaming");
 
         break;
     default:
@@ -173,10 +174,7 @@ static bool check_and_establish_connection(void)
 
     return true;
 }
-static void rsrp_cb(char rsrp_value)
-{
-    rsrp = rsrp_value;
-}
+static void rsrp_cb(char rsrp_value) { rsrp = rsrp_value; }
 
 int main(void)
 {
@@ -215,8 +213,7 @@ int main(void)
     err = modem_info_init();
     if (err)
     {
-        LOG_ERR("Failed initializing modem info module, error: %d",
-                err);
+        LOG_ERR("Failed initializing modem info module, error: %d", err);
     }
 
     /* RSRP value */
@@ -282,7 +279,8 @@ int main(void)
             /* Force time update */
             err = date_time_update_async(NULL);
             if (err)
-                LOG_ERR("Unable to update time with date_time_update_async. Err: %i", err);
+                LOG_ERR("Unable to update time with date_time_update_async. Err: %i",
+                        err);
 
             /* Enable PSM mode */
             err = lte_lc_psm_req(true);
@@ -346,7 +344,8 @@ int main(void)
                 modem_info.data.device.app_version = CONFIG_APP_VERSION;
 
                 /* Encode */
-                err = app_codec_device_info_encode(&modem_info, buf, sizeof(buf), &size);
+                err =
+                    app_codec_device_info_encode(&modem_info, buf, sizeof(buf), &size);
                 if (err)
                 {
                     LOG_ERR("Unable to encode boot time. Err: %i", err);
@@ -521,7 +520,10 @@ int main(void)
             if (err)
                 LOG_ERR("Unable to get motion sample: Err: %i", err);
             else
-                LOG_INF("x: %i.%i y: %i.%i z: %i.%i", out.motion_data.x.val1, abs(out.motion_data.x.val2), out.motion_data.y.val1, abs(out.motion_data.y.val2), out.motion_data.z.val1, abs(out.motion_data.z.val2));
+                LOG_INF("x: %i.%i y: %i.%i z: %i.%i", out.motion_data.x.val1,
+                        abs(out.motion_data.x.val2), out.motion_data.y.val1,
+                        abs(out.motion_data.y.val2), out.motion_data.z.val1,
+                        abs(out.motion_data.z.val2));
 
             err = date_time_now(&out.motion_data.ts);
             if (err)
@@ -561,8 +563,10 @@ int main(void)
             break;
         case APP_EVENT_GPS_STARTED:
 
-            /* Start countdown if gps continues using CONFIG_GPS_CONTROL_FIX_TRY_TIME */
-            k_timer_start(&gps_search_timer, K_SECONDS(CONFIG_GPS_CONTROL_FIX_TRY_TIME), K_NO_WAIT);
+            /* Start countdown if gps continues using CONFIG_GPS_CONTROL_FIX_TRY_TIME
+             */
+            k_timer_start(&gps_search_timer,
+                          K_SECONDS(CONFIG_GPS_CONTROL_FIX_TRY_TIME), K_NO_WAIT);
 
             break;
         case APP_EVENT_BACKEND_DISCONNECTED:

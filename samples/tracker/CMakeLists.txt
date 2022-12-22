@@ -24,11 +24,6 @@ endif()
 message(STATUS "Build type: ${BUILD_TYPE} 🚀")
 message(STATUS "Backend: ${BACKEND} 🎒")
 
-# Set environment variables
-set(ZEPHYR_TOOLCHAIN_VARIANT gnuarmemb)
-# set(GNUARMEMB_TOOLCHAIN_PATH "C:\\Program Files (x86)\\GNU Tools Arm Embedded\\9 2019-q4-major")
-# set(GNUARMEMB_TOOLCHAIN_PATH /opt/nordic/ncs/v1.5.1/toolchain)
-
 # Get the version from Git
 find_package(Git QUIET)
 if(GIT_FOUND)
