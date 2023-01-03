@@ -15,7 +15,7 @@ To run this test you'll need to invoke `twister`. Here are the steps:
     export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
     ```
 
-3. Next, you can run `twister`. There are two ways to do it:
+3. Next, you can run `twister`. There are a few ways to do it:
     a. Within the `nfed` directory run the following to do a compile time check:
 
     ```
@@ -31,3 +31,9 @@ To run this test you'll need to invoke `twister`. Here are the steps:
     ```
 
     **Note:** minimally you shouldn't need the `--west-runner` and `--west-flash` options. These are required for any nRF9160 Feather project though!
+
+    c. To run using the `native_posix` target use the following;
+
+    ```
+    ../zephyr/scripts/twister 
+    ```
