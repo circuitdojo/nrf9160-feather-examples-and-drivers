@@ -7,5 +7,6 @@
 menu "nRF9160 Feather"
 
 rsource "drivers/Kconfig"
+rsource "lib/Kconfig"
 
 endmenu

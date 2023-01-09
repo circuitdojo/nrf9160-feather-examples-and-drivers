@@ -1,0 +1,5 @@
+mainmenu "Example JSON Codec"
+
+config EXAMPLE_JSON_CODEC_ENABLE
+	bool "Enable the JSON codec"
+	select JSON_LIBRARY
