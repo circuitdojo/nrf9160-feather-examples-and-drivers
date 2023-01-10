@@ -1,0 +1,4 @@
+tests:
+  random_tests.random_number_between_1_and_x:
+    platform_allow: circuitdojo_feather_nrf9160_ns
+    tags: random
