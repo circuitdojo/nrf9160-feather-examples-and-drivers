@@ -24,7 +24,7 @@ Using the command window run **Zephyr Tools: Build**
 
 ![Build](img/build.png)
 
-If prompted select the project `nfed/samples/<sample name>` and type `circuitojo_feather_nrf9160_ns` as the target.
+If prompted select the project `nfed/samples/<sample name>` and type `circuitdojo_feather_nrf9160_ns` as the target.
 
 ![Select project](img/select-project.png)
 
