@@ -37,7 +37,13 @@ jobs:
 
       - name: Archive test results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
-          path: nfed/twister-out/
+          path: |
+            nfed/twister-out/testplan.json
+            nfed/twister-out/twister_report.xml
+            nfed/twister-out/twister_suite_report.xml
+            nfed/twister-out/twister.json
+            nfed/twister-out/testplan.json
+            nfed/twister-out/**/*.log
