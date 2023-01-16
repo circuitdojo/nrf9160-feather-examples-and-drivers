@@ -1,7 +1,7 @@
 
-#include <zephyr.h>
-#include <drivers/gpio.h>
-#include <logging/log.h>
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/logging/log.h>
 
 #define POWER_MODE_PIN 13
 

@@ -7,7 +7,7 @@
 #ifndef _APP_MOTION_H
 #define _APP_MOTION_H
 
-#include <drivers/sensor.h>
+#include <zephyr/drivers/sensor.h>
 
 /**
  * @brief Data obtained from the device when an event occurs.

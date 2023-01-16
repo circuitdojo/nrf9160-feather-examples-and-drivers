@@ -8,7 +8,7 @@
 
 #include <qcbor/qcbor_encode.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_codec);
 
 int app_codec_motion_encode(struct app_motion_data *p_payload, uint8_t *p_buf, size_t buf_len, size_t *p_size)

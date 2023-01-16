@@ -20,7 +20,7 @@
 
 #include "battery.h"
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(battery);
 
 #define VBATT DT_PATH(vbatt)

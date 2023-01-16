@@ -11,15 +11,15 @@
  */
 
 #include <date_time.h>
-#include <drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>
 #include <modem/agps.h>
 #include <stdio.h>
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <app_event_manager.h>
 #include <app_gps.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_gps);
 
 /* Power supply mode control */

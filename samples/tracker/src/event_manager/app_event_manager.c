@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <app_event_manager.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_event_manager);
 
 /* Define message queue */

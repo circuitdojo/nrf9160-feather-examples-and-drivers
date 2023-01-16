@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <date_time.h>
 #include <modem/lte_lc.h>
@@ -30,7 +30,7 @@
 #include <app_indication.h>
 #include <app_motion.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_main);
 
 /* Tracking state */

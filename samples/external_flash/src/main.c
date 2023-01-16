@@ -9,8 +9,8 @@
 
 #include <stdio.h>
 
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 #include <fs/fs.h>
 #include <fs/littlefs.h>
 #include <storage/flash_map.h>

@@ -5,9 +5,9 @@
  */
 
 #include <stdio.h>
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/sensor.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/sensor.h>
 
 static void fetch_and_display(const struct device *sensor)
 {
@@ -56,12 +56,11 @@ static void trigger_handler(const struct device *dev,
 
 void main(void)
 {
-    const struct device *sensor = DEVICE_DT_GET(DT_INST(0, st_lis2dh));
+    const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
     if (sensor == NULL || !device_is_ready(sensor))
     {
-        printf("Could not get %s device\n",
-               DT_LABEL(DT_INST(0, st_lis2dh)));
+        printf("Could not get accel0 device\n");
         return;
     }
 

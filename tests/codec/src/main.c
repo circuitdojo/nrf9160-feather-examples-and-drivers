@@ -36,9 +36,8 @@ ZTEST(codec_tests, test_encoding_of_sensor_data)
 	/* Test successful */
 	res = example_json_codec_encode(&payload, buf, sizeof(buf));
 	LOG_INF("Encoded size: %i", res);
-	zassert_equal(res, 110);
-
 	LOG_INF("%s", (char *)buf);
+	zassert_equal(res, 110);
 
 	char *payload_encoded = "{\"timestamp\":1234,\"sensor1_value\":112233,\"sensor2_value\":{\"x_value\":1,\"y_value\":2,\"z_value\":-9}}";
 

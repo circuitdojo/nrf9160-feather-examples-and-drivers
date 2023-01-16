@@ -6,14 +6,14 @@
 
 /* external storage initialization */
 #if defined(CONFIG_FILE_SYSTEM_LITTLEFS)
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
 #include <fs/fs.h>
 #include <fs/littlefs.h>
 #include <storage/flash_map.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_storage);
 
 #if defined(CONFIG_FILE_SYSTEM_LITTLEFS)

@@ -5,14 +5,14 @@
  */
 
 #include <stdio.h>
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <net/golioth/system_client.h>
 
 #include <app_event_manager.h>
 #include <app_backend.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(backend_golioth);
 
 static struct golioth_client *client = GOLIOTH_SYSTEM_CLIENT_GET();

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 #include <power/reboot.h>
 
 #include <pyrinas_cloud/pyrinas_cloud.h>
@@ -12,7 +12,7 @@
 #include <app_event_manager.h>
 #include <app_backend.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(backend_pyrinas);
 
 void pyrinas_cloud_evt_handler(const struct pyrinas_cloud_evt *const p_evt)

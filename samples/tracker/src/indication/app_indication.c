@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 #include <drivers/pwm.h>
 
 #include <app_indication.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_indication);
 
 /* PWM node */

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
@@ -16,7 +16,7 @@
 #include <modem/nrf_modem_lib.h>
 #include <drivers/counter/pcf85063a.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main);
 
 K_SEM_DEFINE(date_time_ready, 0, 1);

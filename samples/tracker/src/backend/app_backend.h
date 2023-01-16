@@ -7,7 +7,7 @@
 #ifndef _BACKEND_H
 #define _BACKEND_H
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 /**
  * @brief Initialize the backend

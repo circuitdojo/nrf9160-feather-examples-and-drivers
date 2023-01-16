@@ -5,8 +5,8 @@
  */
 
 #include <stdio.h>
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 #include <drivers/i2c.h>
 
 #define LIS2DH_ADDR 0x18

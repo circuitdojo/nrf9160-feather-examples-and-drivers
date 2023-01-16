@@ -5,10 +5,10 @@
  */
 
 #include <stdio.h>
-#include <device.h>
+#include <zephyr/device.h>
 #include <string.h>
-#include <zephyr.h>
-#include <drivers/gpio.h>
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
 #include <nrf_modem_at.h>
 
 /* Switch */

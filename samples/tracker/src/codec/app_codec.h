@@ -7,7 +7,7 @@
 #ifndef _APP_CODEC_H
 #define _APP_CODEC_H
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 #include <drivers/gps.h>
 #include <modem/modem_info.h>
 

@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 #include <modem/lte_lc.h>
-#include <devicetree.h>
-#include <drivers/sensor.h>
-#include <drivers/gpio.h>
-#include <drivers/uart.h>
-#include <pm/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/pm/device.h>
 
 /* Devices */
 static const struct device *uart_dev = DEVICE_DT_GET(DT_NODELABEL(uart0));
@@ -24,12 +24,11 @@ static const struct gpio_dt_spec latch_en = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user
 
 static void setup_accel(void)
 {
-	const struct device *sensor = DEVICE_DT_GET(DT_INST(0, st_lis2dh));
+	const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
 	if (!device_is_ready(sensor))
 	{
-		printk("Could not get %s device\n",
-			   DT_LABEL(DT_INST(0, st_lis2dh)));
+		printk("Could not get accel0 device\n");
 		return;
 	}
 
