@@ -16,7 +16,7 @@ ZTEST_SUITE(random_tests, NULL, NULL, NULL, NULL, NULL);
  * Tests the encoding of single and multiple sensor data packages
  *
  */
-ZTEST(random_tests, random_number_between_1_and_x)
+ZTEST(random_tests, test_random_number_between_1_and_x)
 {
 
 	uint32_t num = sys_rand32_get() % (TOP_NUMBER + 1);

@@ -1,20 +1,16 @@
-name: Build
+name: Tests
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.24.5
+    container: zephyrprojectrtos/ci:v0.24.8
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
-    strategy:
-      matrix:
-        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, gps, led_pwm, mfw_update, nanopb, sms]
-        target: [circuitdojo_feather_nrf9160_ns]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           path: nfed
@@ -34,16 +30,14 @@ jobs:
           west update
           pip3 install -r ../zephyr/scripts/requirements-base.txt
 
-      - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
+      - name: Tests
         working-directory: nfed
         run: |
-          west build -b ${{ matrix.target }} -s samples/${{ matrix.sample }} -p
-          mkdir -p .out
-          cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
-          cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
+          ../zephyr/scripts/twister -W -T tests/
 
-      - name: Archive firmware
+      - name: Archive test results
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
-          path: nfed/.out/
+          path: nfed/twister-out/
