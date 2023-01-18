@@ -16,7 +16,7 @@ static const struct json_obj_descr example_json_payload_descr[] = {
 int example_json_codec_encode(struct example_json_payload *payload, char *buf, size_t buf_len)
 {
 
-    /* Calculate the encoded length */
+    /* Calculate the encoded length. (could be smaller) */
     ssize_t len = json_calc_encoded_len(example_json_payload_descr, ARRAY_SIZE(example_json_payload_descr), &payload);
 
     /* Return error if buffer isn't correctly sized */
@@ -30,7 +30,7 @@ int example_json_codec_encode(struct example_json_payload *payload, char *buf, s
 
     /* Return the length if possible*/
     if (ret == 0)
-        return len;
+        return strlen(buf);
     else
         return ret;
 }
