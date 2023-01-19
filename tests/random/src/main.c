@@ -6,7 +6,7 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(random_tests);
 
-#define TOP_NUMBER 12
+#define TOP_NUMBER 10
 
 ZTEST_SUITE(random_tests, NULL, NULL, NULL, NULL, NULL);
 
@@ -20,6 +20,11 @@ ZTEST(random_tests, test_random_number_between_1_and_x)
 {
 
 	uint32_t num = sys_rand32_get() % (TOP_NUMBER + 1);
+
+	/* If we happen to get 0, move up to 1*/
+	if (num == 0)
+		num = 1;
+
 	printk("Random: %i\n", num);
 	zassert_between_inclusive(num, 1, TOP_NUMBER);
 }
