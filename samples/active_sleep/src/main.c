@@ -108,7 +108,7 @@ int setup_i2c()
 	err = pm_device_action_run(i2c_dev, PM_DEVICE_ACTION_SUSPEND);
 	if (err)
 	{
-		printk("Can't power off uart: %d\n", err);
+		printk("Can't power off I2C: %d\n", err);
 		return err;
 	}
 
