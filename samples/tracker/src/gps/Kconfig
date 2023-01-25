@@ -4,36 +4,19 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-#
-# Copyright (c) 2021 Circuit Dojo LLC
-#
-# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
-#
-
 mainmenu "Application GPS Configuration"
 
-config GPS_CONTROL_FIX_TRY_TIME
-	int "Time in seconds to try to get fix"
-	default 60
+config GNSS_SAMPLE_PERIODIC_INTERVAL
+	int "Fix interval for periodic fixes"
+	range 10 65535
+	default 120
 	help
-	  Amount of time the device will attempt to get position fix. Note that
-	  if the interval is interrupted by the device sending data, the timer
-	  is not reset, and the actual try time will be shortened due to
-	  the device not being in PSM mode all the time. If fix is not acquired
-	  before it times out, the device will try to get fix again in
-	  GPS_CONTROL_FIX_CHECK_INTERVAL seconds. If GPS_CONTROL_FIX_COUNT is reached
-	  before the full GPS_CONTROL_FIX_TRY_TIME has passed, the GPS will be stopped.
+	  Fix interval (in seconds) for periodic fixes.
 
-config GPS_CONTROL_FIX_CHECK_INTERVAL
-	int "Interval in seconds to between check for position fix"
-	default 600
+config GNSS_SAMPLE_PERIODIC_TIMEOUT
+	int "Fix timeout for periodic fixes"
+	range 0 65535
+	default 120
 	help
-	  The fix check interval gives the interval for how long it will go
-	  between each retry to achieve position fix. The actual fix time will
-	  vary with factors such as satellite coverage, surrounding buildings
-	  and landscape, PSM interval and activity time requested and granted
-	  by the network.
-
-config GPS_POWER_SUPPLY_MODE_OVERRIDE
-	bool "Disable PFM mode during GPS position acquisition"
-	default true
+	  Fix timeout (in seconds) for periodic fixes.
+	  If set to zero, GNSS is allowed to run indefinitely until a valid PVT estimate is produced.

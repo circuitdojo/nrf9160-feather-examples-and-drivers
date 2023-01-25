@@ -6,24 +6,18 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
-#include <drivers/pwm.h>
+#include <zephyr/drivers/pwm.h>
 
 #include <app_indication.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_indication);
 
-/* PWM node */
-#define PWM_LED_NODE DT_NODELABEL(pwm_led0)
-#define PWM_CTLR DT_PWMS_CTLR(PWM_LED_NODE)
-#define PWM_CHAN DT_PWMS_CHANNEL(PWM_LED_NODE)
-#define PWM_FLAGS DT_PWMS_FLAGS(PWM_LED_NODE)
-
 /* Led PWM period, calculated for 50 Hz signal - in microseconds. */
 #define LED_PWM_PERIOD_US (USEC_PER_SEC / 50U)
 
 /* Static bits. */
-static const struct device *led_pwm_dev = DEVICE_DT_GET(PWM_CTLR);
+static const struct pwm_dt_spec pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(pwm_led0));
 static uint32_t pattern_index = 0;
 static enum app_indication_mode current_mode = app_indication_none;
 
@@ -57,8 +51,7 @@ void pwm_change_fn(struct k_timer *dummy)
         break;
     };
 
-    int err = pwm_pin_set_usec(led_pwm_dev, PWM_CHAN,
-                               LED_PWM_PERIOD_US, pulse, PWM_FLAGS);
+    int err = pwm_set_pulse_dt(&pwm_led, pulse);
     if (err)
     {
         LOG_ERR("Pwm set fail. Err: %i", err);
@@ -71,7 +64,7 @@ K_TIMER_DEFINE(pwm_change_timer, pwm_change_fn, NULL);
 int app_indication_init(void)
 {
 
-    if (led_pwm_dev == NULL || !device_is_ready(led_pwm_dev))
+    if (!device_is_ready(pwm_led.dev))
     {
         LOG_ERR("Error: PWM device is not ready");
         return -EINVAL;
@@ -113,8 +106,7 @@ int app_indication_set(enum app_indication_mode mode)
         break;
     }
 
-    err = pwm_pin_set_usec(led_pwm_dev, PWM_CHAN,
-                           LED_PWM_PERIOD_US, pulse, PWM_FLAGS);
+    err = pwm_set_pulse_dt(&pwm_led, pulse);
     if (err)
     {
         LOG_ERR("Pwm set fail. Err: %i", err);

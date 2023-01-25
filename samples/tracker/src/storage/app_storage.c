@@ -1,17 +1,16 @@
 /*
  * Copyright Circuit Dojo (c) 2021
- * 
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause 
+ *
+ * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
 /* external storage initialization */
 #if defined(CONFIG_FILE_SYSTEM_LITTLEFS)
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
-
-#include <fs/fs.h>
-#include <fs/littlefs.h>
-#include <storage/flash_map.h>
+#include <zephyr/fs/fs.h>
+#include <zephyr/fs/littlefs.h>
+#include <zephyr/storage/flash_map.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_storage);
@@ -44,8 +43,8 @@ static int app_storage_init(const struct device *dev)
         return rc;
     }
 
-    LOG_INF("Area %u at 0x%x on %s for %u bytes",
-            id, (unsigned int)pfa->fa_off, pfa->fa_dev_name,
+    LOG_INF("Area %u at 0x%x on littlefs volume for %u bytes",
+            id, (unsigned int)pfa->fa_off,
             (unsigned int)pfa->fa_size);
 
     /* Optional wipe flash contents */

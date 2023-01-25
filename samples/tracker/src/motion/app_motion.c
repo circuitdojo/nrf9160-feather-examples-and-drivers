@@ -1,6 +1,6 @@
 /*
  * Copyright Circuit Dojo (c) 2021
- * 
+ *
  * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
  */
 
@@ -17,10 +17,10 @@ LOG_MODULE_REGISTER(app_motion);
 
 static struct app_motion_config m_config;
 static int64_t last_trigger = 0;
-static const struct device *sensor;
+static const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
 static void trigger_handler(const struct device *dev,
-                            struct sensor_trigger *trig)
+                            const struct sensor_trigger *trig)
 {
     LOG_DBG("Accel trig");
 
@@ -82,11 +82,9 @@ int app_motion_init(struct app_motion_config config)
     m_config = config;
 
     /* Get accelerometer */
-    sensor = DEVICE_DT_GET(DT_INST(0, st_lis2dh));
-    if (sensor == NULL || !device_is_ready(sensor))
+    if (!device_is_ready(sensor))
     {
-        LOG_ERR("Could not get %s device",
-                DT_LABEL(DT_INST(0, st_lis2dh)));
+        LOG_ERR("Could not get accel0 device");
         return -1;
     }
 

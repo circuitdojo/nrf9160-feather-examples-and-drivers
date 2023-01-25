@@ -19,22 +19,6 @@ static struct golioth_client *client = GOLIOTH_SYSTEM_CLIENT_GET();
 
 static bool is_connected = false;
 
-static void golioth_on_message(struct golioth_client *client,
-                               struct coap_packet *rx)
-{
-    uint16_t payload_len;
-    const uint8_t *payload;
-    uint8_t type;
-
-    type = coap_header_get_type(rx);
-    payload = coap_packet_get_payload(rx, &payload_len);
-
-    if (!IS_ENABLED(CONFIG_LOG_BACKEND_GOLIOTH) && payload)
-    {
-        LOG_HEXDUMP_DBG(payload, payload_len, "Payload");
-    }
-}
-
 void golioth_on_connect(struct golioth_client *client)
 {
     is_connected = true;
@@ -113,7 +97,6 @@ int app_backend_publish(char *p_topic, uint8_t *p_data, size_t len)
 int app_backend_init(char *client_id, size_t client_id_len)
 {
     /*Setup and connect to Golioth*/
-    client->on_message = golioth_on_message;
     client->on_connect = golioth_on_connect;
     golioth_system_client_start();
 

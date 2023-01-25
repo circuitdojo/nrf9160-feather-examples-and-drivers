@@ -1,57 +1,56 @@
 /*
- * Copyright Circuit Dojo (c) 2021
- * 
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * Copyright (c) 2022 Circuit Dojo LLC
  */
 
 #ifndef _APP_GPS_H
 #define _APP_GPS_H
 
-#include <drivers/gps.h>
-
+/* GPS Event */
 struct app_gps_data
 {
-    struct gps_pvt data;
+    int fix;
+    int nsat;
+    double lat;
+    float spkm;
+    double lng;
+    float alt;
+    float hdop;
     int64_t ts;
 };
 
-/**
- * @brief Used to track GPS state
- * 
- */
 enum app_gps_state
 {
     APP_GPS_STATE_STOPPED,
-    APP_GPS_STATE_STARTED,
+    APP_GPS_STATE_ACTIVE,
 };
 
 /**
- * @brief Setup GPS peripheral
- * 
- * @return int 0 on success
+ * @brief Sets up GPS module
+ *
+ * @return int returns error code. 0 on success.
  */
 int app_gps_setup(void);
 
 /**
- * @brief Start acquiring fix.
- * 
- * @return int 0 on success
+ * @brief Starts GPS request
+ *
+ * @return int 0 on success. Otherwise returns error code.
  */
 int app_gps_start(void);
 
 /**
- * @brief Stop acquiring GPS fix
- * 
- * @return int 0 on success
+ * @brief Stops automated GPS requests
+ *
+ * @return int 0 on success. Otherwise returns error code.
  */
 int app_gps_stop(void);
 
 /**
- * @brief Downloads AGPS data via SUPL client
- * 
- * @param req request data from GPS
- * @return int 0 on success
+ * @brief Set GPS period (in seconds)
+ *
+ * @param seconds period for getting GPS data
+ * @return int 0 on success. Otherwise returns error code.
  */
-int app_gps_agps_request(struct gps_agps_request *req);
+int app_gps_set_period(int seconds);
 
-#endif /*_APP_GPS_H*/
+#endif

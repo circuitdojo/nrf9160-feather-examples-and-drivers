@@ -12,7 +12,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <zephyr/kernel.h>
+#include <zephyr/sys/reboot.h>
 
 #include <date_time.h>
 #include <modem/lte_lc.h>
@@ -20,7 +22,6 @@
 #include <modem/nrf_modem_lib.h>
 #include <nrf_modem.h>
 #include <nrf_modem_at.h>
-#include <power/reboot.h>
 
 #include <app_backend.h>
 #include <app_battery.h>
@@ -55,14 +56,8 @@ void activity_expiry_function(struct k_timer *dummy)
     APP_EVENT_MANAGER_PUSH(APP_EVENT_ACTIVITY_TIMEOUT);
 }
 
-void gps_expiry_function(struct k_timer *dummy)
-{
-    APP_EVENT_MANAGER_PUSH(APP_EVENT_GPS_TIMEOUT);
-}
-
 /* Timers */
 K_TIMER_DEFINE(activity_timer, activity_expiry_function, NULL);
-K_TIMER_DEFINE(gps_search_timer, gps_expiry_function, NULL);
 
 /**
  * @brief LTE event handler
@@ -230,7 +225,7 @@ int main(void)
         imei[15] = '\0';
     }
 
-    LOG_INF("IMEI: %s", log_strdup(imei));
+    LOG_INF("IMEI: %s", (char *)(imei));
 
     /* Init backend */
     app_backend_init(imei, strlen(imei));
@@ -387,10 +382,6 @@ int main(void)
             }
             else
             {
-                /* Start AGPS request */
-                err = app_gps_agps_request(&evt.agps_request);
-                if (err)
-                    LOG_ERR("Unable to download AGPS data. Err: %i", err);
 
                 /* Disconnect from LTE after getting apgs data */
                 if (!m_initial_fix)
@@ -425,9 +416,6 @@ int main(void)
                 if (err)
                     LOG_WRN("Unable to get timestamp!");
             }
-
-            /* Stop gps search timer */
-            k_timer_stop(&gps_search_timer);
 
             /* Check if connected otherwise pop this into the outgoing msgq */
             if (!check_and_establish_connection())
@@ -551,9 +539,6 @@ int main(void)
             break;
         case APP_EVENT_GPS_TIMEOUT:
 
-            /* Stop timer */
-            k_timer_stop(&gps_search_timer);
-
             /* Stop GPS */
             app_gps_stop();
 
@@ -562,11 +547,6 @@ int main(void)
 
             break;
         case APP_EVENT_GPS_STARTED:
-
-            /* Start countdown if gps continues using CONFIG_GPS_CONTROL_FIX_TRY_TIME
-             */
-            k_timer_start(&gps_search_timer,
-                          K_SECONDS(CONFIG_GPS_CONTROL_FIX_TRY_TIME), K_NO_WAIT);
 
             break;
         case APP_EVENT_BACKEND_DISCONNECTED:
@@ -577,6 +557,9 @@ int main(void)
             break;
         case APP_EVENT_BACKEND_ERROR:
             /* TODO: fix this? */
+            break;
+
+        default:
             break;
         }
         }

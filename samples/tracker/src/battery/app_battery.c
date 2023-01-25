@@ -16,9 +16,8 @@
 #include <stdlib.h>
 
 #include <zephyr/kernel.h>
-#include <init.h>
 #include <zephyr/drivers/gpio.h>
-#include <drivers/adc.h>
+#include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/logging/log.h>
 
@@ -27,6 +26,7 @@
 LOG_MODULE_REGISTER(battery);
 
 #define VBATT DT_PATH(vbatt)
+#define ZEPHYR_USER DT_PATH(zephyr_user)
 
 #ifdef CONFIG_BOARD_THINGY52_NRF52832
 /* This board uses a divider that reduces max voltage to
@@ -42,21 +42,13 @@ LOG_MODULE_REGISTER(battery);
 
 struct io_channel_config
 {
-	const char *label;
 	uint8_t channel;
-};
-
-struct gpio_channel_config
-{
-	const char *label;
-	uint8_t pin;
-	uint8_t flags;
 };
 
 struct divider_config
 {
 	struct io_channel_config io_channel;
-	struct gpio_channel_config power_gpios;
+	struct gpio_dt_spec power_gpios;
 	/* output_ohm is used as a flag value: if it is nonzero then
 	 * the battery is measured through a voltage divider;
 	 * otherwise it is assumed to be directly connected to Vdd.
@@ -68,21 +60,14 @@ struct divider_config
 static const struct divider_config divider_config = {
 #if DT_NODE_HAS_STATUS(VBATT, okay)
 	.io_channel = {
-		DT_IO_CHANNELS_LABEL(VBATT),
 		DT_IO_CHANNELS_INPUT(VBATT),
 	},
-#if DT_NODE_HAS_PROP(VBATT, power_gpios)
-	.power_gpios = {
-		DT_GPIO_LABEL(VBATT, power_gpios),
-		DT_GPIO_PIN(VBATT, power_gpios),
-		DT_GPIO_FLAGS(VBATT, power_gpios),
-	},
-#endif
+	.power_gpios = GPIO_DT_SPEC_GET_OR(VBATT, power_gpios, {}),
 	.output_ohm = DT_PROP(VBATT, output_ohms),
 	.full_ohm = DT_PROP(VBATT, full_ohms),
 #else  /* /vbatt exists */
 	.io_channel = {
-		DT_LABEL(DT_ALIAS(adc_0)),
+		DT_IO_CHANNELS_INPUT(ZEPHYR_USER),
 	},
 #endif /* /vbatt exists */
 };
@@ -90,49 +75,46 @@ static const struct divider_config divider_config = {
 struct divider_data
 {
 	const struct device *adc;
-	const struct device *gpio;
 	struct adc_channel_cfg adc_cfg;
 	struct adc_sequence adc_seq;
 	int16_t raw;
 };
-static struct divider_data divider_data;
+static struct divider_data divider_data = {
+#if DT_NODE_HAS_STATUS(VBATT, okay)
+	.adc = DEVICE_DT_GET(DT_IO_CHANNELS_CTLR(VBATT)),
+#else
+	.adc = DEVICE_DT_GET(DT_IO_CHANNELS_CTLR(ZEPHYR_USER)),
+#endif
+};
 
 static int divider_setup(void)
 {
 	const struct divider_config *cfg = &divider_config;
 	const struct io_channel_config *iocp = &cfg->io_channel;
-	const struct gpio_channel_config *gcp = &cfg->power_gpios;
+	const struct gpio_dt_spec *gcp = &cfg->power_gpios;
 	struct divider_data *ddp = &divider_data;
 	struct adc_sequence *asp = &ddp->adc_seq;
 	struct adc_channel_cfg *accp = &ddp->adc_cfg;
 	int rc;
 
-	if (iocp->label == NULL)
+	if (!device_is_ready(ddp->adc))
 	{
-		return -ENOTSUP;
-	}
-
-	ddp->adc = device_get_binding(iocp->label);
-	if (ddp->adc == NULL)
-	{
-		LOG_ERR("Failed to get ADC %s", iocp->label);
+		LOG_ERR("ADC device is not ready %s", ddp->adc->name);
 		return -ENOENT;
 	}
 
-	if (gcp->label)
+	if (gcp->port)
 	{
-		ddp->gpio = device_get_binding(gcp->label);
-		if (ddp->gpio == NULL)
+		if (!device_is_ready(gcp->port))
 		{
-			LOG_ERR("Failed to get GPIO %s", gcp->label);
+			LOG_ERR("%s: device not ready", gcp->port->name);
 			return -ENOENT;
 		}
-		rc = gpio_pin_configure(ddp->gpio, gcp->pin,
-								GPIO_OUTPUT_INACTIVE | gcp->flags);
+		rc = gpio_pin_configure_dt(gcp, GPIO_OUTPUT_INACTIVE);
 		if (rc != 0)
 		{
 			LOG_ERR("Failed to control feed %s.%u: %d",
-					gcp->label, gcp->pin, rc);
+					gcp->port->name, gcp->pin, rc);
 			return rc;
 		}
 	}
@@ -191,13 +173,12 @@ int app_battery_measure_enable(bool enable)
 
 	if (battery_ok)
 	{
-		const struct divider_data *ddp = &divider_data;
-		const struct gpio_channel_config *gcp = &divider_config.power_gpios;
+		const struct gpio_dt_spec *gcp = &divider_config.power_gpios;
 
 		rc = 0;
-		if (ddp->gpio)
+		if (gcp->port)
 		{
-			rc = gpio_pin_set(ddp->gpio, gcp->pin, enable);
+			rc = gpio_pin_set_dt(gcp, enable);
 		}
 	}
 	return rc;
@@ -219,9 +200,6 @@ int app_battery_sample(void)
 		{
 			int32_t val = ddp->raw;
 
-			if (val < 0)
-				val = 1;
-
 			adc_raw_to_millivolts(adc_ref_internal(ddp->adc),
 								  ddp->adc_cfg.gain,
 								  sp->resolution,
@@ -230,13 +208,13 @@ int app_battery_sample(void)
 			if (dcp->output_ohm != 0)
 			{
 				rc = val * (uint64_t)dcp->full_ohm / dcp->output_ohm;
-				LOG_INF("raw %u ~ %u mV => %d mV",
+				LOG_INF("raw %u ~ %u mV => %d mV\n",
 						ddp->raw, val, rc);
 			}
 			else
 			{
 				rc = val;
-				LOG_INF("raw %u ~ %u mV", ddp->raw, val);
+				LOG_INF("raw %u ~ %u mV\n", ddp->raw, val);
 			}
 		}
 	}
