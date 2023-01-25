@@ -2,6 +2,10 @@
 /* Adding sensors */
 
 / {
+	chosen {
+		nordic,pm-ext-flash = &w25q32jv;
+	};
+
 	psctl: psctl {
 		compatible = "circuitdojo,psctl";
 		mode-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
