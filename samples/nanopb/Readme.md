@@ -16,9 +16,7 @@ brew install protobuf
 
 ### Ubuntu
 
-```
-sudo apt install protobuf-compiler
-```
+The version of `protoc` in `apt` is sorely of out date. Use the instructions [here](https://lindevs.com/install-protoc-on-ubuntu/) to install `protoc`.
 
 ## Credit
 

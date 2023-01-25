@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 / {
 	aliases {
@@ -6,8 +12,6 @@
 };
 
 &i2c1 {
-	zephyr,concat-buf-size = <256>;
-
 	pcf85063a: pcf85063a@51 {
 		compatible = "nxp,pcf85063a";
 		reg = <0x51>;

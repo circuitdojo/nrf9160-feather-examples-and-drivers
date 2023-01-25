@@ -7,29 +7,24 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
-#include <sys/util.h>
-#include <sys/printk.h>
-#include <inttypes.h>
-#include <drivers/counter.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/sys/printk.h>
+#include <zephyr/drivers/counter.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main);
 
 /* RTC control */
-const struct device *rtc;
+static const struct device *rtc = DEVICE_DT_GET(DT_ALIAS(rtc0));
 
 static void rtc_init()
 {
 
-	/* Get the device */
-	rtc = device_get_binding("PCF85063A");
-	if (rtc == NULL)
+	/* Check if ready*/
+	if (!device_is_ready(rtc))
 	{
-		LOG_ERR("Failed to get RTC device binding");
-		return;
+		LOG_ERR("RTC is not ready!");
 	}
-
-	LOG_INF("device is %p, name is %s", rtc, log_strdup(rtc->name));
 
 	/* 2 seconds */
 	const struct counter_alarm_cfg cfg = {

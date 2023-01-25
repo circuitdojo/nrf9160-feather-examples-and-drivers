@@ -11,10 +11,10 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
-#include <fs/fs.h>
-#include <fs/littlefs.h>
-#include <storage/flash_map.h>
-#include <settings/settings.h>
+#include <zephyr/fs/fs.h>
+#include <zephyr/fs/littlefs.h>
+#include <zephyr/storage/flash_map.h>
+#include <zephyr/settings/settings.h>
 
 /* Matches LFS_NAME_MAX */
 #define MAX_PATH_LEN 255
@@ -56,8 +56,8 @@ static int test_settings_set(const char *name, size_t len,
 		if (rc >= 0)
 		{
 			/* key-value pair was properly read.
-             * rc contains value length.
-             */
+			 * rc contains value length.
+			 */
 			return 0;
 		}
 		/* read-out error */
@@ -91,9 +91,8 @@ void main(void)
 		return;
 	}
 
-	printk("Area %u at 0x%x on %s for %u bytes\n",
-		   id, (unsigned int)pfa->fa_off, pfa->fa_dev_name,
-		   (unsigned int)pfa->fa_size);
+	printk("Area %u at 0x%x for %u bytes\n",
+		   id, (unsigned int)pfa->fa_off, (unsigned int)pfa->fa_size);
 
 	/* Optional wipe flash contents */
 	if (IS_ENABLED(CONFIG_APP_WIPE_STORAGE))

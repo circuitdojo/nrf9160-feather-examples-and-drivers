@@ -11,17 +11,14 @@
 #include <zephyr/drivers/gpio.h>
 #include <nrf_modem_at.h>
 
-/* Switch */
-#define SW0_NODE DT_ALIAS(sw0)
-#define SW0_GPIO_LABEL DT_GPIO_LABEL(SW0_NODE, gpios)
-#define SW0_GPIO_PIN DT_GPIO_PIN(SW0_NODE, gpios)
-#define SW0_GPIO_FLAGS (GPIO_INPUT | DT_GPIO_FLAGS(SW0_NODE, gpios))
+/* Pins */
+struct gpio_dt_spec sw0 = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
 
 /* Callback data */
 static struct gpio_callback button_cb_data;
 
 /* Structures for work */
-static struct k_delayed_work sms_work;
+static struct k_work_delayable sms_work;
 
 /**@brief Recoverable BSD library error. */
 void bsd_recoverable_error_handler(uint32_t err)
@@ -51,8 +48,7 @@ static void sms_work_fn(struct k_work *work)
 
 		printk("%s\r\n", at_commands[i]);
 
-		if ((err = nrf_modem_at_cmd_async(at_commands[i],
-										  at_cmd_handler)) != 0)
+		if ((err = nrf_modem_at_cmd_async(at_cmd_handler, at_commands[i])) != 0)
 		{
 			printk("Error sending: %s. Error: %i.", at_commands[i], err);
 		}
@@ -68,41 +64,33 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 
 	/* Run SMS work */
-	k_delayed_work_submit(&sms_work, K_NO_WAIT);
+	k_work_schedule(&sms_work, K_NO_WAIT);
 }
 
 static void button_init()
 {
-	const struct device *button;
 	int ret;
 
-	button = device_get_binding(SW0_GPIO_LABEL);
-	if (button == NULL)
-	{
-		printk("Error: didn't find %s device\n", SW0_GPIO_LABEL);
-		return;
-	}
-
-	ret = gpio_pin_configure(button, SW0_GPIO_PIN, SW0_GPIO_FLAGS);
+	ret = gpio_pin_configure_dt(&sw0, GPIO_INPUT);
 	if (ret != 0)
 	{
-		printk("Error %d: failed to configure %s pin %d\n", ret,
-			   SW0_GPIO_LABEL, SW0_GPIO_PIN);
+		printk("Error %d: failed to configure sw0 on pin %d\n", ret,
+			   sw0.pin);
 		return;
 	}
 
-	ret = gpio_pin_interrupt_configure(button, SW0_GPIO_PIN,
-									   GPIO_INT_EDGE_TO_ACTIVE);
+	ret = gpio_pin_interrupt_configure_dt(&sw0,
+										  GPIO_INT_EDGE_TO_ACTIVE);
 	if (ret != 0)
 	{
-		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-			   ret, SW0_GPIO_LABEL, SW0_GPIO_PIN);
+		printk("Error %d: failed to configure interrupt on sw0 pin %d\n",
+			   ret, sw0.pin);
 		return;
 	}
 
-	gpio_init_callback(&button_cb_data, button_pressed, BIT(SW0_GPIO_PIN));
-	gpio_add_callback(button, &button_cb_data);
-	printk("Set up button at %s pin %d\n", SW0_GPIO_LABEL, SW0_GPIO_PIN);
+	gpio_init_callback(&button_cb_data, button_pressed, BIT(sw0.pin));
+	gpio_add_callback(sw0.port, &button_cb_data);
+	printk("Set up button at sw0 pin %d\n", sw0.pin);
 }
 
 void main(void)
@@ -111,7 +99,7 @@ void main(void)
 	button_init();
 
 	/* Work init */
-	k_delayed_work_init(&sms_work, sms_work_fn);
+	k_work_init_delayable(&sms_work, sms_work_fn);
 
 	/* Boot message */
 	printk("SMS example started\n");
