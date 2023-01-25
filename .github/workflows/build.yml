@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.24.5
+    container: zephyrprojectrtos/ci:v0.24.8
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
