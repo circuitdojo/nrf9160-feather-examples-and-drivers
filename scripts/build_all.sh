@@ -13,6 +13,9 @@ version=$(git describe --tags --long)
 # Make output dir
 mkdir -p .out
 
+# Stop on error
+set -e
+
 # For each target
 for app in "${apps[@]}"
 do
@@ -24,13 +27,19 @@ do
 # Echo version
 echo "Building ${app} (ver: ${version}) for ${target}".
 
+# Change directory
+cd samples/${app}
+
 # Build the target
-west build -b $target -s samples/${app} -p
+west build -b $target
 
 # Copy the target files over
-mkdir -p .out/${version}/${app}
-cp build/zephyr/app_update.bin .out/${version}/${app}/${app}_${target}_${version}_update.bin
-cp build/zephyr/merged.hex .out/${version}/${app}/${app}_${target}_${version}_merged.hex
+mkdir -p ../../.out/${version}/${app}
+cp build/zephyr/app_update.bin ../../.out/${version}/${app}/${app}_${target}_${version}_update.bin
+cp build/zephyr/merged.hex ../../.out/${version}/${app}/${app}_${target}_${version}_merged.hex
+
+# Go back
+cd ../..
 
 done
 done

@@ -139,7 +139,7 @@ int setup_spi()
 void main(void)
 {
 	printk("active_sleep\n");
-	z
+
 	/* Setup GPIO */
 	setup_gpio();
 
