@@ -188,11 +188,6 @@ int main(void)
     app_indication_set(app_indication_glow);
 #endif
 
-    /* Setup gps */
-    err = app_gps_setup();
-    if (err)
-        LOG_ERR("Unable to setup GPS. Err: %i", err);
-
     /* Configure dfu handler*/
     nrf_modem_lib_dfu_handler();
 
@@ -203,6 +198,11 @@ int main(void)
     err = lte_lc_init_and_connect();
     if (err)
         LOG_ERR("Failed to init. Err: %i", err);
+
+    /* Setup gps */
+    err = app_gps_setup();
+    if (err)
+        LOG_ERR("Unable to setup GPS. Err: %i", err);
 
     /* Configure modem info module*/
     err = modem_info_init();
