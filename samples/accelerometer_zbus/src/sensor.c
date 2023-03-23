@@ -11,6 +11,23 @@ LOG_MODULE_REGISTER(sensor);
 
 const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
+/* Zbus channels */
+ZBUS_CHAN_DEFINE(sample_start_chan,                /* Name */
+                 struct start_data,                /* Message type */
+                 NULL,                             /* Validator */
+                 NULL,                             /* User data */
+                 ZBUS_OBSERVERS(sample_start_sub), /* observers */
+                 ZBUS_MSG_INIT(false)              /* Initial value */
+);
+
+ZBUS_CHAN_DEFINE(sample_data_chan,                /* Name */
+                 struct sensor_data,              /* Message type */
+                 NULL,                            /* Validator */
+                 NULL,                            /* User data */
+                 ZBUS_OBSERVERS(sample_data_lis), /* observers */
+                 ZBUS_MSG_INIT(0)                 /* Initial value is 0 */
+);
+
 #ifdef CONFIG_LIS2DH_TRIGGER
 ZBUS_CHAN_DECLARE(sample_start_chan);
 
@@ -69,7 +86,6 @@ int sensor_init()
     return 0;
 }
 
-ZBUS_CHAN_DECLARE(sample_data_chan);
 ZBUS_SUBSCRIBER_DEFINE(sample_start_sub, 4);
 
 static void sensor_task(void)

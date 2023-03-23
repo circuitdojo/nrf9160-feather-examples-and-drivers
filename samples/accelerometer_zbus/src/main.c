@@ -14,21 +14,8 @@ LOG_MODULE_REGISTER(main);
 
 #include "../include/sensor.h"
 
-ZBUS_CHAN_DEFINE(sample_start_chan,                /* Name */
-                 struct start_data,                /* Message type */
-                 NULL,                             /* Validator */
-                 NULL,                             /* User data */
-                 ZBUS_OBSERVERS(sample_start_sub), /* observers */
-                 ZBUS_MSG_INIT(false)              /* Initial value */
-);
-
-ZBUS_CHAN_DEFINE(sample_data_chan,                /* Name */
-                 struct sensor_data,              /* Message type */
-                 NULL,                            /* Validator */
-                 NULL,                            /* User data */
-                 ZBUS_OBSERVERS(sample_data_lis), /* observers */
-                 ZBUS_MSG_INIT(0)                 /* Initial value is 0 */
-);
+/* Extern of sample_start_chan */
+ZBUS_CHAN_DECLARE(sample_start_chan);
 
 void main(void)
 {
