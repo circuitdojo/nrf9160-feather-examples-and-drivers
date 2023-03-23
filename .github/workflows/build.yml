@@ -10,7 +10,7 @@ jobs:
       CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
       matrix:
-        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, led_pwm, mfw_update, nanopb, sms]
+        sample: [accelerometer, accelerometer_zbus, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, led_pwm, mfw_update, nanopb, sms]
         target: [circuitdojo_feather_nrf9160_ns]
     steps:
       - name: Checkout

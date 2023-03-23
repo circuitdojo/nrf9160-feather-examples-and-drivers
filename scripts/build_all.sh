@@ -4,7 +4,7 @@
 declare -a targets=("circuitdojo_feather_nrf9160_ns")
 
 # Applications
-declare -a apps=("accelerometer" "active_sleep" "at_client" "battery" "blinky" "bme280" "button" "deep_sleep" "external_flash" "external_rtc" "external_rtc_time_sync" "gps" "led_pwm" "mfw_update" "nanopb" "sms")
+declare -a apps=("accelerometer" "accelerometer_zbus" "active_sleep" "at_client" "battery" "blinky" "bme280" "button" "deep_sleep" "external_flash" "external_rtc" "external_rtc_time_sync" "gps" "led_pwm" "mfw_update" "nanopb" "sms")
 
 # Get Git tags
 git fetch --prune --tags
