@@ -101,18 +101,18 @@ static void nrf_modem_lib_dfu_handler(void)
 
     switch (err)
     {
-    case MODEM_DFU_RESULT_OK:
+    case NRF_MODEM_DFU_RESULT_OK:
         LOG_INF("Modem update suceeded, reboot");
         sys_reboot(SYS_REBOOT_COLD);
         break;
-    case MODEM_DFU_RESULT_UUID_ERROR:
-    case MODEM_DFU_RESULT_AUTH_ERROR:
+    case NRF_MODEM_DFU_RESULT_UUID_ERROR:
+    case NRF_MODEM_DFU_RESULT_AUTH_ERROR:
         LOG_ERR("Modem update failed, error: %d", err);
         LOG_ERR("Modem will use old firmware");
         sys_reboot(SYS_REBOOT_COLD);
         break;
-    case MODEM_DFU_RESULT_HARDWARE_ERROR:
-    case MODEM_DFU_RESULT_INTERNAL_ERROR:
+    case NRF_MODEM_DFU_RESULT_HARDWARE_ERROR:
+    case NRF_MODEM_DFU_RESULT_INTERNAL_ERROR:
         LOG_ERR("Modem update malfunction, error: %d, reboot", err);
         sys_reboot(SYS_REBOOT_COLD);
         break;
