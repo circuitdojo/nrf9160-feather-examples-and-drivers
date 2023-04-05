@@ -17,28 +17,29 @@ LOG_MODULE_REGISTER(main);
 /* Extern of sample_start_chan */
 ZBUS_CHAN_DECLARE(sample_start_chan);
 
-void main(void)
-{
-    int err = 0;
-
-    /* Init sensor */
-    err = sensor_init();
-    if (err < 0)
-        LOG_ERR("Unable to init sensor. Err: %i", err);
-
-/* Setup timer if not using trigger  */
+/* Polling on a fixed interval */
 #ifndef CONFIG_LIS2DH_TRIGGER
-    LOG_INF("Polling at 0.5 Hz");
-
+/* Timer handler*/
+static void sample_timer_handler(struct k_timer *timer)
+{
     struct start_data start = {0};
-
-    while (1)
-    {
-        zbus_chan_pub(&sample_start_chan, &start, K_MSEC(500));
-        k_sleep(K_SECONDS(1));
-    }
-#endif
+    zbus_chan_pub(&sample_start_chan, &start, K_MSEC(500));
 }
+
+K_TIMER_DEFINE(sample_timer, sample_timer_handler, NULL);
+
+/* Init function */
+int timer_start_init(const struct device *dev)
+{
+    ARG_UNUSED(dev);
+
+    k_timer_start(&sample_timer, K_SECONDS(1), K_SECONDS(1));
+
+    return 0;
+}
+
+SYS_INIT(timer_start_init, APPLICATION, 99);
+#endif
 
 static void listener_cb(const struct zbus_channel *chan)
 {

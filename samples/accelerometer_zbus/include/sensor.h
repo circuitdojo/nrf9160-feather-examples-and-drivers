@@ -14,6 +14,4 @@ struct sensor_data
     struct sensor_value value[3];
 };
 
-int sensor_init(void);
-
 #endif

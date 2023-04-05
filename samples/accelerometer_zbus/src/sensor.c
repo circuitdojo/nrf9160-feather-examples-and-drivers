@@ -39,8 +39,10 @@ static void trigger_handler(const struct device *dev,
 }
 #endif
 
-int sensor_init()
+int sensor_init(const struct device *dev)
 {
+    ARG_UNUSED(dev);
+
     if (!device_is_ready(sensor))
     {
         LOG_ERR("Could not get accel0 device");
@@ -85,6 +87,8 @@ int sensor_init()
 
     return 0;
 }
+
+SYS_INIT(sensor_init, APPLICATION, 90);
 
 ZBUS_SUBSCRIBER_DEFINE(sample_start_sub, 4);
 
