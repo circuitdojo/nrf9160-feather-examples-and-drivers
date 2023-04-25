@@ -25,7 +25,7 @@ manifest:
     # Golioth backend
     - name: golioth
       path: modules/lib/golioth
-      revision: 9e02125bffff0c0377595f3e05c30e40d1d2cb1b
+      revision: v0.6.0
       url: https://github.com/golioth/golioth-zephyr-sdk
       import: west-external.yml
     # Pyrinas backend

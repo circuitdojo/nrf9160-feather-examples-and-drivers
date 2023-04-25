@@ -46,22 +46,27 @@ bool app_backend_is_connected()
     return is_connected;
 }
 
+static int async_handler(struct golioth_req_rsp *rsp)
+{
+    if (rsp->err) {
+        LOG_WRN("Golioth async operation failed: %d", rsp->err);
+        return rsp->err;
+    }
+
+    LOG_DBG("Golioth async operation successful");
+
+    return 0;
+}
+
 int app_backend_stream(char *p_topic, uint8_t *p_data, size_t len)
 {
     int err;
 
-    char path[128];
-    err = snprintf(path, sizeof(path), ".s/%s", p_topic);
-    if (err < 0)
-    {
-        LOG_WRN("Failed to encode path. Err: %i", err);
-        return err;
-    }
+    err = golioth_stream_push_cb(client, p_topic,
+                                 GOLIOTH_CONTENT_FORMAT_APP_CBOR,
+                                 p_data, len,
+                                 async_handler, NULL);
 
-    err = golioth_lightdb_set(client,
-                              path,
-                              COAP_CONTENT_FORMAT_APP_CBOR,
-                              p_data, len);
     if (err)
     {
         LOG_WRN("Failed to stream data: %i", err);
@@ -74,18 +79,11 @@ int app_backend_publish(char *p_topic, uint8_t *p_data, size_t len)
 {
     int err;
 
-    char path[128];
-    err = snprintf(path, sizeof(path), ".d/%s", p_topic);
-    if (err < 0)
-    {
-        LOG_WRN("Failed to encode path. Err: %i", err);
-        return err;
-    }
+    err = golioth_lightdb_set_cb(client, p_topic,
+                                 GOLIOTH_CONTENT_FORMAT_APP_CBOR,
+                                 p_data, len,
+                                 async_handler, NULL);
 
-    err = golioth_lightdb_set(client,
-                              path,
-                              COAP_CONTENT_FORMAT_APP_CBOR,
-                              p_data, len);
     if (err)
     {
         LOG_WRN("Failed to publish data: %i", err);
