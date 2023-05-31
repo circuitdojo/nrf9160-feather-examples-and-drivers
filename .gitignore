@@ -58,5 +58,8 @@ sparkfun
 .vscode
 twister-out*
 
+# Docmentation Related
+docs/html
+
 # Extension related
 log-*.txt
