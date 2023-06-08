@@ -19,11 +19,20 @@ ZBUS_CHAN_DECLARE(sample_start_chan);
 
 /* Polling on a fixed interval */
 #ifndef CONFIG_LIS2DH_TRIGGER
-/* Timer handler*/
-static void sample_timer_handler(struct k_timer *timer)
+
+/* Work */
+static void start_work_handler(struct k_work *work)
 {
     struct start_data start = {0};
     zbus_chan_pub(&sample_start_chan, &start, K_MSEC(500));
+}
+
+K_WORK_DEFINE(start_work, start_work_handler);
+
+/* Timer handler*/
+static void sample_timer_handler(struct k_timer *timer)
+{
+    k_work_submit(&start_work);
 }
 
 K_TIMER_DEFINE(sample_timer, sample_timer_handler, NULL);
