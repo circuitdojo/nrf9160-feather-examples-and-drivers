@@ -271,12 +271,6 @@ int main(void)
             /*Set the flag*/
             m_cellular_connected = true;
 
-            /* Force time update */
-            err = date_time_update_async(NULL);
-            if (err)
-                LOG_ERR("Unable to update time with date_time_update_async. Err: %i",
-                        err);
-
             /* Enable PSM mode */
             err = lte_lc_psm_req(true);
             if (err)

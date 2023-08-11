@@ -44,22 +44,9 @@ if(GIT_FOUND)
 endif()
 
 if(version)
-  string(REGEX REPLACE "^([0-9]+).*$" "\\1" version_major ${version})
-  string(REGEX REPLACE "^[0-9]+\.([0-9]+).*$" "\\1" version_minor "${version}")
-  string(REGEX REPLACE "^[0-9]+\.[0-9]+\.([0-9]+).*$" "\\1" version_patch "${version}")
-  string(REGEX REPLACE "^[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)-.*$" "\\1" version_commit "${version}")
-  string(REGEX REPLACE "^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-(.*)$" "\\1" version_hash "${version}")
-
   # Create version.conf
-  file(WRITE conf/version.conf "CONFIG_APP_VERSION_MAJOR=${version_major}\n")
-  file(APPEND conf/version.conf "CONFIG_APP_VERSION_MINOR=${version_minor}\n")
-  file(APPEND conf/version.conf "CONFIG_APP_VERSION_PATCH=${version_patch}\n")
-  file(APPEND conf/version.conf "CONFIG_APP_VERSION_COMMIT=${version_commit}\n")
-  file(APPEND conf/version.conf "CONFIG_APP_VERSION_HASH=\"${version_hash}\"\n")
-  file(APPEND conf/version.conf "CONFIG_APP_VERSION=\"${version}\"\n")
-
-  message(STATUS "Version: ${version_major}.${version_minor}.${version_patch}-${version_commit}-${version_hash}")
-
+  file(WRITE conf/version.conf "CONFIG_APP_VERSION=\"${version}\"\n")
+  message(STATUS "Version: ${version}")
 endif()
 
 # Define configuration files.
