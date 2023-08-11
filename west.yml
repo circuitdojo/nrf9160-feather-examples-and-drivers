@@ -31,7 +31,7 @@ manifest:
     # Pyrinas backend
     - name: pyrinas
       url: https://github.com/pyrinas-iot/pyrinas-zephyr
-      revision: v1.7.x
+      revision: v1.9.x
       path: pyrinas
       import: true
     # RTC Driver
