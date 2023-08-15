@@ -39,9 +39,8 @@ static void trigger_handler(const struct device *dev,
 }
 #endif
 
-int sensor_init(const struct device *dev)
+int sensor_init(void)
 {
-    ARG_UNUSED(dev);
 
     if (!device_is_ready(sensor))
     {
@@ -88,7 +87,7 @@ int sensor_init(const struct device *dev)
     return 0;
 }
 
-SYS_INIT(sensor_init, APPLICATION, 90);
+SYS_INIT(sensor_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 
 ZBUS_SUBSCRIBER_DEFINE(sample_start_sub, 4);
 

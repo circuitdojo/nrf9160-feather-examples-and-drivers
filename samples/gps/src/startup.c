@@ -7,7 +7,7 @@
 
 const struct device *gpio = DEVICE_DT_GET(DT_NODELABEL(gpio0));
 
-static int gps_sample_setup(const struct device *arg)
+static int gps_sample_setup(void)
 {
 
     /* Gpio pin */

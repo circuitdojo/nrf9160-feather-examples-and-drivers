@@ -54,14 +54,14 @@ static void trigger_handler(const struct device *dev,
 }
 #endif
 
-void main(void)
+int main(void)
 {
     const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
     if (sensor == NULL || !device_is_ready(sensor))
     {
         printf("Could not get accel0 device\n");
-        return;
+        return -ENODEV;
     }
 
 #if CONFIG_LIS2DH_TRIGGER
@@ -84,7 +84,7 @@ void main(void)
             if (rc != 0)
             {
                 printf("Failed to set odr: %d\n", rc);
-                return;
+                return rc;
             }
             printf("Sampling at %u Hz\n", odr.val1);
         }
@@ -93,7 +93,7 @@ void main(void)
         if (rc != 0)
         {
             printf("Failed to set trigger: %d\n", rc);
-            return;
+            return rc;
         }
 
         printf("Waiting for triggers\n");
@@ -110,4 +110,6 @@ void main(void)
         k_sleep(K_MSEC(2000));
     }
 #endif /* CONFIG_LIS2DH_TRIGGER */
+
+    return 0;
 }

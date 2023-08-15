@@ -41,7 +41,7 @@ static void rtc_init()
 
 static bool timer_flag = false;
 
-void main(void)
+int main(void)
 {
 
 	/* Init RTC */
@@ -69,4 +69,6 @@ void main(void)
 
 		k_sleep(K_MSEC(100));
 	}
+
+	return 0;
 }

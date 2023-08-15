@@ -64,7 +64,7 @@ static void date_time_event_handler(const struct date_time_evt *evt)
 	}
 }
 
-void main(void)
+int main(void)
 {
 	int err = 0;
 
@@ -90,7 +90,7 @@ void main(void)
 	if (err)
 	{
 		LOG_ERR("Unable to get date & time. Err: %i", err);
-		return;
+		return err;
 	}
 
 	/* Convert to seconds */
@@ -110,7 +110,7 @@ void main(void)
 	else
 	{
 		LOG_ERR("Unable to convert to broken down UTC");
-		return;
+		return -EINVAL;
 	}
 
 	/* Print out the current time */
@@ -121,7 +121,7 @@ void main(void)
 	if (err)
 	{
 		LOG_ERR("Unable to set time. Err: %i", err);
-		return;
+		return err;
 	}
 
 	k_sleep(K_SECONDS(2));
@@ -140,4 +140,6 @@ void main(void)
 	uint64_t future_ts = mktime(&future_time);
 
 	LOG_INF("UTC Unix Epoc: %lld", future_ts);
+
+	return 0;
 }

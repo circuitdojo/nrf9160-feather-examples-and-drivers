@@ -135,7 +135,7 @@ int setup_spi()
 	return 0;
 }
 
-void main(void)
+int main(void)
 {
 	printk("active_sleep\n");
 
@@ -155,4 +155,6 @@ void main(void)
 	/* Init modem library */
 	lte_lc_init();
 	lte_lc_power_off();
+
+	return 0;
 }

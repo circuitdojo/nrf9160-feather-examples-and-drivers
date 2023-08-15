@@ -26,7 +26,7 @@ static struct fs_mount_t lfs_storage_mnt = {
 };
 #endif
 
-static int app_storage_init(const struct device *dev)
+static int app_storage_init()
 {
     struct fs_mount_t *mp = &lfs_storage_mnt;
     unsigned int id = (uintptr_t)mp->storage_dev;

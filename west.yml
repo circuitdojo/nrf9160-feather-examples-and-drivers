@@ -7,7 +7,7 @@ manifest:
     - name: nrf
       repo-path: sdk-nrf
       remote: nrfconnect
-      revision: v2.3.0
+      revision: v2.4.1
       import: 
         name-blocklist:
           - matter
@@ -25,7 +25,7 @@ manifest:
     # Golioth backend
     - name: golioth
       path: modules/lib/golioth
-      revision: v0.6.0
+      revision: v0.7.1
       url: https://github.com/golioth/golioth-zephyr-sdk
       import: west-external.yml
     # Pyrinas backend
@@ -39,6 +39,10 @@ manifest:
       url: https://github.com/circuitdojo/pcf85063a
       revision: 81c1c285970df5bbdae945ee0ca12ec56f1886e6
       path: pcf85063a
+    - name: qcbor
+      revision: d1d9576e57cfd67a60572bde0a3c1b15c5c46d1f
+      url: https://github.com/jaredwolff/QCBOR.git
+      path: modules/lib/qcbor
   self:
     # This repository should be cloned to nrf9160-feather
     path: nfed

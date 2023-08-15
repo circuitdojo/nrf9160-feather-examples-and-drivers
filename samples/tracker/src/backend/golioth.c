@@ -48,7 +48,8 @@ bool app_backend_is_connected()
 
 static int async_handler(struct golioth_req_rsp *rsp)
 {
-    if (rsp->err) {
+    if (rsp->err)
+    {
         LOG_WRN("Golioth async operation failed: %d", rsp->err);
         return rsp->err;
     }
@@ -94,6 +95,9 @@ int app_backend_publish(char *p_topic, uint8_t *p_data, size_t len)
 
 int app_backend_init(char *client_id, size_t client_id_len)
 {
+    ARG_UNUSED(client_id);
+    ARG_UNUSED(client_id_len);
+
     /*Setup and connect to Golioth*/
     client->on_connect = golioth_on_connect;
     golioth_system_client_start();

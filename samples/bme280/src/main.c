@@ -17,13 +17,13 @@
 
 const struct device *dev = DEVICE_DT_GET(BME280);
 
-void main(void)
+int main(void)
 {
 	if (!device_is_ready(dev))
 	{
 		printk("No device \"%s\" found; did initialization fail?\n",
 			   dev->name);
-		return;
+		return -ENODEV;
 	}
 	else
 	{
@@ -45,4 +45,6 @@ void main(void)
 
 		k_sleep(K_MSEC(1000));
 	}
+
+	return 0;
 }

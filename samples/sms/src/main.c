@@ -93,7 +93,7 @@ static void button_init()
 	printk("Set up button at sw0 pin %d\n", sw0.pin);
 }
 
-void main(void)
+int main(void)
 {
 	/* Init the button */
 	button_init();
@@ -103,4 +103,6 @@ void main(void)
 
 	/* Boot message */
 	printk("SMS example started\n");
+
+	return 0;
 }

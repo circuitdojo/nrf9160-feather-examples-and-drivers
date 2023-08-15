@@ -34,142 +34,11 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_main);
 
-/* Tracking state */
-bool m_cellular_connected = false;
-bool m_boot_message = false;
-bool m_initial_fix = false;
-
-/* Tracking time */
-int64_t m_last_publish = 0;
+/* Flags */
+static bool m_boot_message = false;
 
 /* Imei */
 static char imei[20];
-
-/* RSRP */
-static uint8_t rsrp = 0;
-
-/* Saving output if not connected */
-K_MSGQ_DEFINE(outgoing_msgq, sizeof(struct app_event), APP_EVENT_QUEUE_SIZE, 4);
-
-void activity_expiry_function(struct k_timer *dummy)
-{
-    APP_EVENT_MANAGER_PUSH(APP_EVENT_ACTIVITY_TIMEOUT);
-}
-
-/* Timers */
-K_TIMER_DEFINE(activity_timer, activity_expiry_function, NULL);
-
-/**
- * @brief LTE event handler
- *
- * @param evt
- */
-static void lte_handler(const struct lte_lc_evt *const evt)
-{
-    switch (evt->type)
-    {
-    case LTE_LC_EVT_NW_REG_STATUS:
-        LOG_DBG("LTE Status: %i", evt->nw_reg_status);
-
-        if ((evt->nw_reg_status != LTE_LC_NW_REG_REGISTERED_HOME) &&
-            (evt->nw_reg_status != LTE_LC_NW_REG_REGISTERED_ROAMING))
-        {
-            /* Not connected. Send event. */
-            APP_EVENT_MANAGER_PUSH(APP_EVENT_CELLULAR_DISCONNECT);
-            break;
-        }
-
-        /* Otherwise send connected event */
-        APP_EVENT_MANAGER_PUSH(APP_EVENT_CELLULAR_CONNECTED);
-
-        LOG_DBG("Network registration status: %s",
-                evt->nw_reg_status == LTE_LC_NW_REG_REGISTERED_HOME
-                    ? "Connected - home network"
-                    : "Connected - roaming");
-
-        break;
-    default:
-        break;
-    }
-}
-
-static void nrf_modem_lib_dfu_handler(void)
-{
-    int err;
-
-    err = nrf_modem_lib_init(NORMAL_MODE);
-
-    switch (err)
-    {
-    case NRF_MODEM_DFU_RESULT_OK:
-        LOG_INF("Modem update suceeded, reboot");
-        sys_reboot(SYS_REBOOT_COLD);
-        break;
-    case NRF_MODEM_DFU_RESULT_UUID_ERROR:
-    case NRF_MODEM_DFU_RESULT_AUTH_ERROR:
-        LOG_ERR("Modem update failed, error: %d", err);
-        LOG_ERR("Modem will use old firmware");
-        sys_reboot(SYS_REBOOT_COLD);
-        break;
-    case NRF_MODEM_DFU_RESULT_HARDWARE_ERROR:
-    case NRF_MODEM_DFU_RESULT_INTERNAL_ERROR:
-        LOG_ERR("Modem update malfunction, error: %d, reboot", err);
-        sys_reboot(SYS_REBOOT_COLD);
-        break;
-    default:
-        break;
-    }
-}
-
-static int activate_lte(bool activate)
-{
-    int err;
-
-    if (activate)
-    {
-        err = lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_LTE);
-        if (err)
-        {
-            LOG_ERR("Failed to activate LTE, error: %d", err);
-            return err;
-        }
-    }
-    else
-    {
-        err = lte_lc_func_mode_set(LTE_LC_FUNC_MODE_DEACTIVATE_LTE);
-        if (err)
-        {
-            LOG_ERR("Failed to deactivate LTE, error: %d", err);
-            return err;
-        }
-    }
-
-    return 0;
-}
-
-static bool check_and_establish_connection(void)
-{
-
-    /* Check if connected */
-    if (!m_cellular_connected || !app_backend_is_connected())
-    {
-
-        if (!m_cellular_connected)
-        {
-            activate_lte(true);
-        }
-        else if (!app_backend_is_connected())
-        {
-            app_backend_connect();
-        }
-
-        /* Skip for now.. */
-        return false;
-    }
-
-    return true;
-}
-static void rsrp_cb(char rsrp_value) { rsrp = rsrp_value; }
 
 int main(void)
 {
@@ -188,16 +57,25 @@ int main(void)
     app_indication_set(app_indication_glow);
 #endif
 
-    /* Configure dfu handler*/
-    nrf_modem_lib_dfu_handler();
-
-    /* Register LTE handler */
-    lte_lc_register_handler(lte_handler);
+    /* Init modem library */
+    err = nrf_modem_lib_init();
+    if (err < 0)
+        __ASSERT_MSG_INFO("Unable to initialize modem lib. (err: %i)", err);
 
     /* Init lte_lc*/
-    err = lte_lc_init_and_connect();
-    if (err)
-        LOG_ERR("Failed to init. Err: %i", err);
+    err = lte_lc_init();
+    if (err < 0)
+        __ASSERT_MSG_INFO("Failed to init. Err: %i", err);
+
+    /* Power saving is turned on */
+    err = lte_lc_psm_req(true);
+    if (err < 0)
+        __ASSERT_MSG_INFO("PSM request failed. (err: %i)", err);
+
+    /* Connect to LTE */
+    err = lte_lc_connect();
+    if (err < 0)
+        __ASSERT_MSG_INFO("LTE connect failed. (err: %i)", err);
 
     /* Setup gps */
     err = app_gps_setup();
@@ -210,9 +88,6 @@ int main(void)
     {
         LOG_ERR("Failed initializing modem info module, error: %d", err);
     }
-
-    /* RSRP value */
-    err = modem_info_rsrp_register(rsrp_cb);
 
     /* Get the IMEI (used for client ID)*/
     err = modem_info_string_get(MODEM_INFO_IMEI, imei, sizeof(imei));
@@ -263,35 +138,14 @@ int main(void)
         switch (evt.type)
         {
         case APP_EVENT_CELLULAR_DISCONNECT:
-            m_cellular_connected = false;
-
             break;
         case APP_EVENT_CELLULAR_CONNECTED:
-
-            /*Set the flag*/
-            m_cellular_connected = true;
-
-            /* Enable PSM mode */
-            err = lte_lc_psm_req(true);
-            if (err)
-                LOG_ERR("Requesting PSM failed, error: %d", err);
-
-            /* If there are outgoing messages, connect.. */
-            if (k_msgq_num_used_get(&outgoing_msgq) > 0)
-            {
-                /* Connect to backend */
-                err = app_backend_connect();
-                if (err)
-                    LOG_ERR("Unable to connect to backend. Err: %i", err);
-            }
-
             break;
         case APP_EVENT_BACKEND_CONNECTED:
         {
 
             uint8_t buf[256];
             size_t size = 0;
-            struct app_event outgoing;
             struct app_modem_info modem_info;
 
             if (!m_boot_message)
@@ -321,9 +175,6 @@ int main(void)
                     break;
                 }
 
-                /* RSRP */
-                modem_info.rsrp = rsrp;
-
                 /* Get battery voltage in mV */
                 app_battery_measure_enable(true);
                 modem_info.data.device.battery.value = app_battery_sample();
@@ -349,46 +200,12 @@ int main(void)
                     break;
                 }
 
-                /* Start (in)activity timer */
-                k_timer_start(&activity_timer, K_SECONDS(10), K_NO_WAIT);
-
                 /* Set flag */
                 m_boot_message = true;
             }
 
-            /* Move save messages */
-            while (k_msgq_get(&outgoing_msgq, &outgoing, K_NO_WAIT) == 0)
-            {
-                app_event_manager_push(&outgoing);
-            }
-
             break;
         }
-        case APP_EVENT_AGPS_REQUEST:
-
-            if (!m_cellular_connected)
-            {
-                /* Turn on LTE */
-                activate_lte(true);
-
-                /* Push event */
-                app_event_manager_push(&evt);
-            }
-            else
-            {
-
-                /* Disconnect from LTE after getting apgs data */
-                if (!m_initial_fix)
-                {
-                    m_initial_fix = true;
-
-                    // Disconnect only if it's enabled.
-                    if (IS_ENABLED(CONFIG_DISCONNECT_FOR_FIRST_FIX))
-                        activate_lte(false);
-                }
-            }
-
-            break;
         case APP_EVENT_GPS_DATA:
         {
             uint8_t buf[256];
@@ -409,17 +226,6 @@ int main(void)
                 err = date_time_now(&evt.gps_data.ts);
                 if (err)
                     LOG_WRN("Unable to get timestamp!");
-            }
-
-            /* Check if connected otherwise pop this into the outgoing msgq */
-            if (!check_and_establish_connection())
-            {
-                /* Save msg */
-                err = k_msgq_put(&outgoing_msgq, &evt, K_NO_WAIT);
-                if (err)
-                    LOG_ERR("Unable to queue to outgoing. Err: %i", err);
-
-                break;
             }
 
             /* Encode CBOR data */
@@ -446,27 +252,13 @@ int main(void)
                 LOG_ERR("Unable to stream. Err: %i", err);
             }
 
-            /* Start (in)activity timer */
-            k_timer_start(&activity_timer, K_SECONDS(10), K_NO_WAIT);
-
             break;
-
+        }
         case APP_EVENT_MOTION_DATA:
         {
 
             uint8_t buf[256];
             size_t size = 0;
-
-            /* Check if connected otherwise pop this into the outgoing msgq */
-            if (!app_backend_is_connected())
-            {
-                /* Save msg */
-                err = k_msgq_put(&outgoing_msgq, &evt, K_NO_WAIT);
-                if (err)
-                    LOG_ERR("Unable to queue to outgoing. Err: %i", err);
-
-                break;
-            }
 
             /* Encode CBOR data */
             err = app_codec_motion_encode(&evt.motion_data, buf, sizeof(buf), &size);
@@ -484,9 +276,6 @@ int main(void)
             {
                 LOG_ERR("Unable to publish. Err: %i", err);
             }
-
-            /* Start (in)activity timer */
-            k_timer_start(&activity_timer, K_SECONDS(1), K_NO_WAIT);
 
             break;
         }
@@ -511,11 +300,6 @@ int main(void)
             if (err)
                 LOG_WRN("Unable to get timestamp!");
 
-            /* Save msg */
-            err = k_msgq_put(&outgoing_msgq, &evt, K_NO_WAIT);
-            if (err)
-                LOG_ERR("Unable to queue to outgoing. Err: %i", err);
-
             /* (Re)start GPS operations */
             err = app_gps_start();
             if (err)
@@ -526,9 +310,6 @@ int main(void)
             break;
         }
         case APP_EVENT_ACTIVITY_TIMEOUT:
-
-            /* Disconnect from backend */
-            // app_backend_disconnect();
 
             break;
         case APP_EVENT_GPS_TIMEOUT:
@@ -555,7 +336,6 @@ int main(void)
 
         default:
             break;
-        }
         }
     }
 }

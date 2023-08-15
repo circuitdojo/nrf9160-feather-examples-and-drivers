@@ -72,7 +72,7 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb,
 	gpio_pin_set_dt(&led0, 1);
 }
 
-void main(void)
+int main(void)
 {
 
 	int ret;
@@ -80,7 +80,7 @@ void main(void)
 	if (!device_is_ready(gpio))
 	{
 		printk("Error: unable to get gpio device binding.\n");
-		return;
+		return -ENODEV;
 	}
 
 	ret = gpio_pin_configure_dt(&sw0, GPIO_INPUT);
@@ -88,7 +88,7 @@ void main(void)
 	{
 		printk("Error %d: failed to configure sw0 on pin %d\n",
 			   ret, sw0.pin);
-		return;
+		return ret;
 	}
 
 	ret = gpio_pin_interrupt_configure_dt(&sw0,
@@ -97,7 +97,7 @@ void main(void)
 	{
 		printk("Error %d: failed to configure interrupt on sw0 pin %d\n",
 			   ret, sw0.pin);
-		return;
+		return ret;
 	}
 
 	gpio_init_callback(&button_cb_data, button_pressed, BIT(sw0.pin));
@@ -110,7 +110,7 @@ void main(void)
 	{
 		printk("Error %d: failed to configure LED on pin %d\n",
 			   ret, led0.pin);
-		return;
+		return ret;
 	}
 
 	/* Init work function */
@@ -121,4 +121,6 @@ void main(void)
 	{
 		k_cpu_idle();
 	}
+
+	return 0;
 }
