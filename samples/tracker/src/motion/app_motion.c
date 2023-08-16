@@ -1,7 +1,7 @@
 /*
- * Copyright Circuit Dojo (c) 2021
+ * Copyright 2023 Circuit Dojo LLC
  *
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <stdio.h>
@@ -15,7 +15,9 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app_motion);
 
-static struct app_motion_config m_config;
+static struct app_motion_config m_config = {
+    .trigger_interval = 600,
+};
 static int64_t last_trigger = 0;
 static const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
@@ -30,7 +32,7 @@ static void trigger_handler(const struct device *dev,
     if (uptime > (last_trigger + m_config.trigger_interval * MSEC_PER_SEC) || last_trigger == 0)
     {
 
-        APP_EVENT_MANAGER_PUSH(APP_EVENT_MOTION_EVENT);
+        /* TODO: do something.. */
         last_trigger = uptime;
     }
 }
@@ -76,16 +78,14 @@ void app_motion_set_trigger_time(uint64_t val)
     last_trigger = val;
 }
 
-int app_motion_init(struct app_motion_config config)
+static int app_motion_init(void)
 {
-    /* Set configuration */
-    m_config = config;
 
     /* Get accelerometer */
     if (!device_is_ready(sensor))
     {
         LOG_ERR("Could not get accel0 device");
-        return -1;
+        return -ENODEV;
     }
 
     struct sensor_trigger trig;
@@ -117,3 +117,5 @@ int app_motion_init(struct app_motion_config config)
 
     return 0;
 }
+
+SYS_INIT(app_motion_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);

@@ -1,7 +1,7 @@
 /*
- * Copyright Circuit Dojo (c) 2021
+ * Copyright 2023 Circuit Dojo LLC
  * 
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _BACKEND_H

@@ -6,9 +6,9 @@
  */
 
 /*
- * Copyright Circuit Dojo (c) 2021
+ * Copyright 2023 Circuit Dojo LLC
  *
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <math.h>
@@ -208,13 +208,13 @@ int app_battery_sample(void)
 			if (dcp->output_ohm != 0)
 			{
 				rc = val * (uint64_t)dcp->full_ohm / dcp->output_ohm;
-				LOG_INF("raw %u ~ %u mV => %d mV\n",
+				LOG_INF("raw %u ~ %u mV => %d mV",
 						ddp->raw, val, rc);
 			}
 			else
 			{
 				rc = val;
-				LOG_INF("raw %u ~ %u mV\n", ddp->raw, val);
+				LOG_INF("raw %u ~ %u mV", ddp->raw, val);
 			}
 		}
 	}

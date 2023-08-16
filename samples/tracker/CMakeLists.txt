@@ -1,30 +1,7 @@
-#
-# Copyright (c) 2021 Circuit Dojo LLC
-#
-# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
-#
+# SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.13.4)
+cmake_minimum_required(VERSION 3.20.0)
 
-# Determine the build type
-if (NOT BUILD_TYPE)
-  set(BUILD_TYPE debug)
-elseif(BUILD_TYPE STREQUAL "release")
-  add_compile_definitions( BUILD_TYPE_RELEASE )
-else()
-  message( FATAL_ERROR "Unknown build type: ${BUILD_TYPE}" )
-endif()
-
-# Determine the backend type
-if (NOT BACKEND)
-  set(BACKEND golioth)
-endif()
-
-# Print out build type
-message(STATUS "Build type: ${BUILD_TYPE} 🚀")
-message(STATUS "Backend: ${BACKEND} 🎒")
-
-# Get the version from Git
 find_package(Git QUIET)
 if(GIT_FOUND)
   execute_process(
@@ -37,7 +14,7 @@ if(GIT_FOUND)
     RESULT_VARIABLE                  return_code
   )
   if(return_code)
-    message(STATUS "git describe failed: ${stderr}; ${KERNEL_VERSION_STRING} will be used instead")
+    message(STATUS "git describe failed: ${return_code}")
   elseif(CMAKE_VERBOSE_MAKEFILE)
     message(STATUS "git describe stderr: ${stderr}")
   endif()
@@ -45,22 +22,27 @@ endif()
 
 if(version)
   # Create version.conf
-  file(WRITE conf/version.conf "CONFIG_APP_VERSION=\"${version}\"\n")
+  file(WRITE version.conf "CONFIG_APP_VERSION=\"${version}\"\n")
   message(STATUS "Version: ${version}")
 endif()
 
-# Define configuration files.
-list(APPEND CONF_FILE
-  ${CMAKE_CURRENT_SOURCE_DIR}/conf/prj.conf
-  ${CMAKE_CURRENT_SOURCE_DIR}/conf/backends/${BACKEND}.conf
-  ${CMAKE_CURRENT_SOURCE_DIR}/conf/${BUILD_TYPE}.conf
-  ${CMAKE_CURRENT_SOURCE_DIR}/conf/version.conf
-  ${CMAKE_CURRENT_SOURCE_DIR}/boards/${BOARD}.conf
-  )
+
+# Load NCS/Zephyr build system
+set(CONF_FILE prj.conf)
+
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/boards/${BOARD}.conf)
+  list(APPEND CONF_FILE boards/${BOARD}.conf)
+endif()
+
+# TODO: change to EXTRA_CONF_FILE >= Zephyr 3.4
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/version.conf)
+  list(APPEND CONF_FILE version.conf)
+endif()
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(tracker)
 
-project(tracker-demo)
+target_sources(app PRIVATE src/main.c)
 
 # Application directories
 add_subdirectory(src/backend)
@@ -68,9 +50,7 @@ add_subdirectory(src/battery)
 add_subdirectory(src/codec)
 add_subdirectory(src/event_manager)
 add_subdirectory(src/gps)
-add_subdirectory(src/indication)
 add_subdirectory(src/modem)
 add_subdirectory(src/motion)
+add_subdirectory(src/shell)
 add_subdirectory(src/storage)
-
-target_sources(app PRIVATE src/main.c)

@@ -1,14 +1,13 @@
 /*
- * Copyright Circuit Dojo (c) 2021
+ * Copyright 2023 Circuit Dojo LLC
  *
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _APP_EVENT_MANAGER_H
 #define _APP_EVENT_MANAGER_H
 
 #include <app_motion.h>
-#include <app_gps.h>
 
 /**
  * @brief Max size of event queue
@@ -43,7 +42,6 @@ enum app_event_type
     APP_EVENT_GPS_TIMEOUT,
     APP_EVENT_GPS_STARTED,
     APP_EVENT_MOTION_EVENT,
-    APP_EVENT_MOTION_DATA,
     APP_EVENT_ACTIVITY_TIMEOUT,
     APP_EVENT_END
 };
@@ -58,8 +56,6 @@ struct app_event
     enum app_event_type type;
     union
     {
-        struct app_gps_data gps_data;
-        struct app_motion_data motion_data;
         int err;
     };
 };
@@ -79,13 +75,5 @@ char *app_event_type_to_string(enum app_event_type type);
  * @return int
  */
 int app_event_manager_push(struct app_event *p_evt);
-
-/**
- * @brief Gets an event from the message queue
- *
- * @param p_evt pointer where the data will be copied to.
- * @return int
- */
-int app_event_manager_get(struct app_event *p_evt);
 
 #endif

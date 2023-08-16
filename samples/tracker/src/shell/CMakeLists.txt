@@ -5,4 +5,4 @@
 #
 
 target_include_directories(app PRIVATE .)
-target_sources(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/app_modem.c)
+target_sources_ifdef(CONFIG_SHELL_AT_CMD app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/app_at_shell.c)

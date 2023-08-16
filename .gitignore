@@ -63,3 +63,6 @@ docs/html
 
 # Extension related
 log-*.txt
+
+# Backup
+*.bak

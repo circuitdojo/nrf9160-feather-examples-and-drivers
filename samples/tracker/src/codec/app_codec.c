@@ -1,7 +1,7 @@
 /*
- * Copyright Circuit Dojo (c) 2021
+ * Copyright 2023 Circuit Dojo LLC
  *
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <app_codec.h>
@@ -54,11 +54,11 @@ int app_codec_gps_encode(struct app_gps_data *p_payload, uint8_t *p_buf, size_t 
     QCBOREncode_OpenMap(&ec);
 
     /* Add coordinates */
-    QCBOREncode_AddDoubleToMap(&ec, "lat", p_payload->lat);
-    QCBOREncode_AddDoubleToMap(&ec, "lng", p_payload->lng);
+    QCBOREncode_AddDoubleToMap(&ec, "lat", p_payload->data.latitude);
+    QCBOREncode_AddDoubleToMap(&ec, "lng", p_payload->data.longitude);
 
     /* Add remaining parameters */
-    QCBOREncode_AddDoubleToMap(&ec, "alt", p_payload->alt);
+    QCBOREncode_AddDoubleToMap(&ec, "alt", p_payload->data.altitude);
 
     /* Timestamp */
     if (p_payload->ts > 0)

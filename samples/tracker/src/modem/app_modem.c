@@ -1,7 +1,7 @@
-/**
- * @author Jared Wolff (jared@circuitdojo.com)
+/*
+ * Copyright 2023 Circuit Dojo LLC
  *
- * @copyright Copyright (c) 2023 SurveyStance
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@ LOG_MODULE_REGISTER(modem);
 #include <modem/lte_lc.h>
 
 /* Event manager */
-#include "app_event_manager.h"
+#include <app_event_manager.h>
 
 atomic_t is_tau = ATOMIC_INIT(0);
 

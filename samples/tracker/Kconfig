@@ -1,21 +1,9 @@
-#
-# Copyright (c) 2021 Circuit Dojo LLC
-#
-# SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
-#
+config DISABLE_CONSOLE_ON_BOOT
+	bool "Disable console on start for power savings"
+	default n
 
-mainmenu "Tracker Demo Application"
-
-config DISCONNECT_FOR_FIRST_FIX
-	bool "Major verison number"
-	default false
-
-config USE_LED_INDICATION
-	bool "Turns on default LED indication events"
-	default true
-
-rsource "src/version/Kconfig"
 rsource "src/gps/Kconfig"
-rsource "src/storage/Kconfig"
+rsource "src/shell/Kconfig"
+rsource "src/version/Kconfig"
 
 source "Kconfig.zephyr"

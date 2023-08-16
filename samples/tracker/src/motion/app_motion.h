@@ -1,7 +1,7 @@
 /*
- * Copyright Circuit Dojo (c) 2021
- * 
- * SPDX-License-Identifier: LicenseRef-Circuit-Dojo-5-Clause
+ * Copyright 2023 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _APP_MOTION_H
@@ -11,7 +11,7 @@
 
 /**
  * @brief Data obtained from the device when an event occurs.
- * 
+ *
  */
 struct app_motion_data
 {
@@ -23,8 +23,8 @@ struct app_motion_data
 };
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 struct app_motion_config
 {
@@ -33,17 +33,9 @@ struct app_motion_config
 };
 
 /**
- * @brief 
- * 
- * @param handler 
- * @return int 
- */
-int app_motion_init(struct app_motion_config config);
-
-/**
  * @brief Resets trigger mechanism so another event can be
  *  triggered before the next trigger interval
- * 
+ *
  */
 void app_motion_reset_trigger_time(void);
 
@@ -51,7 +43,7 @@ void app_motion_set_trigger_time(uint64_t val);
 
 /**
  * @brief Gets a sample from the device
- * 
+ *
  * @param p_data pointer to the data structure being filled
  * @return int 0 on success
  */

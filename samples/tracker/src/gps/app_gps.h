@@ -1,21 +1,19 @@
 /*
- * Copyright (c) 2022 Circuit Dojo LLC
+ * Copyright 2023 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _APP_GPS_H
 #define _APP_GPS_H
 
+#include <nrf_modem_gnss.h>
+
 /* GPS Event */
 struct app_gps_data
 {
-    int fix;
-    int nsat;
-    double lat;
-    float spkm;
-    double lng;
-    float alt;
-    float hdop;
     int64_t ts;
+    struct nrf_modem_gnss_pvt_data_frame data;
 };
 
 enum app_gps_state
@@ -52,5 +50,7 @@ int app_gps_stop(void);
  * @return int 0 on success. Otherwise returns error code.
  */
 int app_gps_set_period(int seconds);
+
+int app_gps_get_last_fix(struct app_gps_data *data);
 
 #endif
