@@ -39,10 +39,6 @@ manifest:
       url: https://github.com/circuitdojo/pcf85063a
       revision: 81c1c285970df5bbdae945ee0ca12ec56f1886e6
       path: pcf85063a
-    - name: qcbor
-      revision: d1d9576e57cfd67a60572bde0a3c1b15c5c46d1f
-      url: https://github.com/jaredwolff/QCBOR.git
-      path: modules/lib/qcbor
   self:
     # This repository should be cloned to nrf9160-feather
     path: nfed
