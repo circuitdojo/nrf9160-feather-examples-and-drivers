@@ -76,6 +76,9 @@ int setup_uart()
 		return err;
 	}
 
+	/* Turn off to save power */
+	NRF_CLOCK->TASKS_HFCLKSTOP = 1;
+
 	return 0;
 }
 
@@ -92,7 +95,6 @@ int main(void)
 	/* Init modem */
 	nrf_modem_lib_init();
 	lte_lc_init();
-	lte_lc_power_off();
 
 	/* Peripherals */
 	setup_uart();
