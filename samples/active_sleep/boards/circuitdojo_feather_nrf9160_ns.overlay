@@ -7,6 +7,8 @@
 / {
     zephyr,user {
         latch-en-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+        wp-gpios = < &gpio0 8 GPIO_ACTIVE_LOW >;
+        hold-gpios = < &gpio0 10 GPIO_ACTIVE_LOW >;
     };
 
     leds {
@@ -27,5 +29,14 @@
 		compatible = "st,lis2dh";
 		reg = <0x18>;
 		disconnect-sdo-sa0-pull-up;
+	};
+};
+
+&spi3 {
+	w25q32jv: w25q32jv@0 {
+        /delete-property/ wp-gpios;
+        /delete-property/ hold-gpios;
+		t-enter-dpd = < 3500 >;
+		t-exit-dpd = < 3500 >;
 	};
 };

@@ -19,6 +19,9 @@ static const struct gpio_dt_spec sw0 = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
 static const struct gpio_dt_spec led0 = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec latch_en = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), latch_en_gpios);
 
+static const struct gpio_dt_spec wp = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), wp_gpios);
+static const struct gpio_dt_spec hold = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), hold_gpios);
+
 static void setup_accel(void)
 {
 	const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
@@ -47,17 +50,12 @@ static void setup_accel(void)
 static int setup_gpio(void)
 {
 
-	gpio_pin_configure(sw0.port,
-					   sw0.pin,
-					   GPIO_DISCONNECTED);
+	gpio_pin_configure_dt(&sw0, GPIO_DISCONNECTED);
+	gpio_pin_configure_dt(&led0, GPIO_DISCONNECTED);
+	gpio_pin_configure_dt(&latch_en, GPIO_DISCONNECTED);
 
-	gpio_pin_configure(led0.port,
-					   led0.pin,
-					   GPIO_DISCONNECTED);
-
-	gpio_pin_configure(latch_en.port,
-					   latch_en.pin,
-					   GPIO_DISCONNECTED);
+	gpio_pin_configure_dt(&wp, GPIO_INPUT | GPIO_PULL_UP);
+	gpio_pin_configure_dt(&hold, GPIO_INPUT | GPIO_PULL_UP);
 
 	return 0;
 }
