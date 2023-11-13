@@ -7,12 +7,11 @@ manifest:
     - name: nrf
       repo-path: sdk-nrf
       remote: nrfconnect
-      revision: v2.4.1
+      revision: v2.4.2
       import: 
         name-blocklist:
           - matter
           - nrf-802154
-          - cjson
           - openthread
           - cmock
           - unity

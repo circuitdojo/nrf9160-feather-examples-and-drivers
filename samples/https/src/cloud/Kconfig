@@ -1,0 +1,17 @@
+mainmenu "Application Cloud Configuration"
+
+config CLOUD_TLS_SEC_TAG
+    int "TLS Sec Tag"
+    default 42
+
+config CLOUD_HOSTNAME
+	string "Base URL"
+	default "www.circuitdojo.com"
+
+config CLOUD_PORT
+    int "Port"
+    default 443
+
+config CLOUD_PUBLISH_PATH
+    string "Publish Path"
+    default "/some/path"
