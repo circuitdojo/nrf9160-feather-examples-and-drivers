@@ -6,6 +6,10 @@
 
 menu "GNSS sample"
 
+config MODEM_ANTENNA_AT_XANTCFG
+	string "Antenna configuration"
+	default "AT%XANTCFG=1"
+
 choice
 	default GNSS_SAMPLE_MODE_CONTINUOUS
 	prompt "Select GNSS operation mode"

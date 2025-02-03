@@ -2,29 +2,29 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(startup);
 
-#define POWER_MODE_PIN 13
+#include <modem/nrf_modem_lib.h>
+#include <nrf_modem_at.h>
 
-#if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9160_NS)
-const struct device *gpio = DEVICE_DT_GET(DT_NODELABEL(gpio0));
+/* Initialization of AUX pin */
+#if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9151)
+NRF_MODEM_LIB_ON_INIT(aux_init_hook, on_modem_lib_init, NULL);
 
-static int gps_sample_setup(void)
+static void on_modem_lib_init(int ret, void *ctx)
 {
+    ARG_UNUSED(ctx);
 
-    /* Gpio pin */
-    if (!device_is_ready(gpio))
-        __ASSERT(gpio, "Failed to get the gpio0 device");
+    if (ret != 0)
+    {
+        return;
+    }
 
-    /* Set low */
-    gpio_pin_configure(gpio, POWER_MODE_PIN, GPIO_OUTPUT_LOW);
-
-    return 0;
-}
-#else
-static int gps_sample_setup(void)
-{
-    return 0;
+    printk("*** Setting configuration: %s ***\n", CONFIG_MODEM_ANTENNA_AT_XANTCFG);
+    int err = nrf_modem_at_printf("%s", CONFIG_MODEM_ANTENNA_AT_XANTCFG);
+    if (err)
+    {
+        LOG_ERR("Failed to set configuration (err: %d)", err);
+    }
 }
 #endif
-
-SYS_INIT(gps_sample_setup, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
