@@ -21,27 +21,8 @@ static int sysreg_setup(void)
         return -ENODEV;
     }
 
-    uint8_t data = 0;
-    int ret = mfd_npm1300_reg_read_burst(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, &data, 1);
-    if (ret < 0)
-    {
-        printk("Failed to read VBUSINLIM. Err: %d", ret);
-        return ret;
-    }
-    else
-    {
-        if (data == 0)
-        {
-            data = 5;
-
-            printk("*** Vsys Current Limit: %d mA ***\n", data * 100);
-
-            return 0;
-        }
-    }
-
-    /* Write to MFD to set SYSREG current to 500mA */
-    ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, 0);
+    /* Write to MFD to set SYSREG current to 1000mA */
+    int ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, SYSREG_VBUSINILIM_1000MA);
     if (ret < 0)
     {
         printk("Failed to set VBUSINLIM. Err: %d\n", ret);
@@ -55,6 +36,8 @@ static int sysreg_setup(void)
         printk("Failed to save settings. Err: %d\n", ret);
         return ret;
     }
+
+    printk("*** Vsys Current Limit: %d mA ***\n", SYSREG_VBUSINILIM_1000MA * 100);
 
     /* Delay boot for programmer */
     k_sleep(K_SECONDS(2));
