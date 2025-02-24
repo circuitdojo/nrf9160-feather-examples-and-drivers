@@ -4,11 +4,11 @@
 #include <zephyr/drivers/mfd/npm1300.h>
 LOG_MODULE_REGISTER(app_startup);
 
-#define SYSREG_VBUSIN_BASE 0x02
+#define SYSREG_VBUSIN_BASE 0x02U
 
-#define SYSREG_TASKUPDATEILIMSW 0x00
-#define SYSREG_VBUSINILIM0 0x01
-#define SYSREG_VBUSINILIM_1000MA 0x0a
+#define SYSREG_TASKUPDATEILIMSW 0x00U
+#define SYSREG_VBUSINILIM0 0x01U
+#define SYSREG_VBUSINILIM_1000MA 0x0AU
 
 static int sysreg_setup(void)
 {
