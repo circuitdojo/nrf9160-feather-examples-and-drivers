@@ -25,7 +25,7 @@ static int sysreg_setup(void)
     int ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, SYSREG_VBUSINILIM_1000MA);
     if (ret < 0)
     {
-        printk("Failed to set VBUSINLIM. Err: %d\n", ret);
+        LOG_ERR("Failed to set VBUSINLIM. Err: %d", ret);
         return ret;
     }
 
@@ -33,11 +33,11 @@ static int sysreg_setup(void)
     ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_TASKUPDATEILIMSW, 0x01);
     if (ret < 0)
     {
-        printk("Failed to save settings. Err: %d\n", ret);
+        LOG_ERR("Failed to save settings. Err: %d", ret);
         return ret;
     }
 
-    printk("*** Vsys Current Limit: %d mA ***\n", SYSREG_VBUSINILIM_1000MA * 100);
+    LOG_INF("*** Vsys Current Limit: %d mA ***", SYSREG_VBUSINILIM_1000MA * 100);
 
     /* Delay boot for programmer */
     k_sleep(K_SECONDS(2));
