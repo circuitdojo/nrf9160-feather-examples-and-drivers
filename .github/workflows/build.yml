@@ -8,6 +8,7 @@ jobs:
     container: zephyrprojectrtos/ci:v0.27.3
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
+      XDG_CACHE_HOME: /tmp/pip-cache
     strategy:
       fail-fast: false
       matrix:
@@ -74,7 +75,7 @@ jobs:
         id: cache-pip
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
+          path: /tmp/pip-cache
           key: pip-${{ runner.os }}-v0.27.0-${{ hashFiles('external/zephyr/scripts/requirements-base.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-v0.27.0-
