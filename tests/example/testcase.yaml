@@ -1,4 +1,8 @@
 tests:
   example.framework_tests:
-    platform_allow: circuitdojo_feather_nrf9160_ns native_posix qemu_cortex_m3
+    platform_allow: 
+      - circuitdojo_feather_nrf9160/nrf9160/ns
+      - circuitdojo_feather_nrf9151/nrf9151/ns
+      - native_posix
+      - qemu_cortex_m3
     tags: framework_tests

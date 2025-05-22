@@ -1,4 +1,7 @@
 tests:
   codec_tests.test_encoding_of_sensor_data:
-    platform_allow: circuitdojo_feather_nrf9160_ns native_posix
+    platform_allow: 
+      - circuitdojo_feather_nrf9160/nrf9160/ns
+      - circuitdojo_feather_nrf9151/nrf9151/ns
+      - native_posix
     tags: codec
