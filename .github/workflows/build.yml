@@ -100,15 +100,15 @@ jobs:
         run: |
           west build -b ${{ matrix.target }} -s samples/${{ matrix.sample }} -p --sysbuild
           mkdir -p archive
-          cp build/merged.hex archive/${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}_merged.hex
-          cp build/dfu_application.zip archive/${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}_dfu_application.zip
-          cp build/dfu_application.zip_manifest.json archive/${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}_dfu_application.zip_manifest.json
+          cp build/merged.hex archive/merged.hex
+          cp build/dfu_application.zip archive/dfu_application.zip
+          cp build/dfu_application.zip_manifest.json archive/dfu_application.zip_manifest.json
           ls -l archive
 
       - name: Archive firmware
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
+          name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}_${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}
           path: nfed/archive/
           if-no-files-found: warn
