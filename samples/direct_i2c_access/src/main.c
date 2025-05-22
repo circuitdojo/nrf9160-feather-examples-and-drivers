@@ -9,7 +9,8 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/i2c.h>
 
-#define LIS2DH_ADDR 0x18
+
+#define LIS2DH_ADDR DT_REG_ADDR(DT_ALIAS(accel0))
 #define LIS2DH_REG_WAI 0x0f
 
 #define LIS2DH_REG_CTRL0 0x1e
@@ -22,7 +23,9 @@
 int main(void)
 {
     uint8_t who_am_i = 0;
-    const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c2));
+    const struct device *i2c_dev = DEVICE_DT_GET(DT_BUS(DT_ALIAS(accel0)));
+
+    printf("Address: 0x%x\n", LIS2DH_ADDR);
 
     if (i2c_dev == NULL || !device_is_ready(i2c_dev))
     {

@@ -24,3 +24,9 @@ CONFIG_UART_CONSOLE=y
 
 # Enable pincontrol
 CONFIG_PINCTRL=y
+
+# Enable I2C
+CONFIG_I2C=y
+
+# Enable MFD
+CONFIG_MFD_NPM1300=y
