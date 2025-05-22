@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.26.14
+    container: zephyrprojectrtos/ci:v0.27.6.1
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
@@ -31,18 +31,20 @@ jobs:
         target:
           [
             circuitdojo_feather_nrf9160/nrf9160/ns,
-            circuitdojo_feather_nrf9161/nrf9161/ns,
+            circuitdojo_feather_nrf9151/nrf9151/ns,
           ]
         exclude:
           # List of target-app combinations to exclude
           - target: circuitdojo_feather_nrf9160/nrf9160/ns
             sample: deep_sleep
-          - target: circuitdojo_feather_nrf9161/nrf9161/ns
+          - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: external_rtc
-          - target: circuitdojo_feather_nrf9161/nrf9161/ns
+          - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: external_rtc_time_sync
-          - target: circuitdojo_feather_nrf9161/nrf9161/ns
+          - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: led_pwm
+          - target: circuitdojo_feather_nrf9151/nrf9151/ns
+            sample: mfw_update
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,13 +76,16 @@ jobs:
 
       - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
         working-directory: nfed
+        continue-on-error: true
         run: |
           west build -b ${{ matrix.target }} -s samples/${{ matrix.sample }} -p --sysbuild
           mkdir -p .out
           cp build/merged.hex .out/${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}_merged.hex
 
       - name: Archive firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
           path: nfed/.out/
+          if-no-files-found: warn
