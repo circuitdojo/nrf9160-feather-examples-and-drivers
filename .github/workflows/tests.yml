@@ -5,9 +5,10 @@ on: []
 jobs:
   tests:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.26.14
+    container: zephyrprojectrtos/ci:v0.27.3
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
+      PIP_CACHE_DIR: /tmp/pip-cache
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,13 +23,36 @@ jobs:
           echo "branch=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+
+      - name: Cache West dependencies
+        id: cache-west
+        uses: actions/cache@v4
+        with:
+          path: |
+            nfed/zephyr
+            nfed/modules
+            nfed/tools
+            nfed/bootloader
+          key: west-${{ runner.os }}-v0.27.0-${{ hashFiles('nfed/west.yml') }}
+          restore-keys: |
+            west-${{ runner.os }}-v0.27.0-
+
+      - name: Cache Python dependencies
+        id: cache-pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-v0.27.0-${{ hashFiles('nfed/zephyr/scripts/requirements-base.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-v0.27.0-
+
       - name: Initialize
         working-directory: nfed
         run: |
           pip3 install -U west
           west init -l .
           west update
-          pip3 install -r ../zephyr/scripts/requirements-base.txt
+          pip3 install -r ../external/zephyr/scripts/requirements-base.txt
 
       - name: Tests
         working-directory: nfed
