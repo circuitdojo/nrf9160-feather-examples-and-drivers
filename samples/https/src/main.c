@@ -64,14 +64,6 @@ int main(void)
         return err;
     }
 
-    /* Init lte_lc*/
-    err = lte_lc_init();
-    if (err < 0)
-    {
-        LOG_ERR("Failed to init. Err: %i", err);
-        return err;
-    }
-
     /* Power saving is turned on */
     lte_lc_psm_req(true);
 

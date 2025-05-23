@@ -26,6 +26,7 @@ jobs:
             external_flash,
             external_rtc,
             external_rtc_time_sync,
+            https,
             led_pwm,
             mfw_update,
             sms,

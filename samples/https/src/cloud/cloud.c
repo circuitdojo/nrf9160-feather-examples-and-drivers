@@ -44,7 +44,7 @@ int tls_setup(int fd)
 
     /* Cipher suite */
     // Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (0xc02b)
-    nrf_sec_cipher_t cipher_list[] = {0xc02b};
+    int cipher_list[] = {0xc02b};
 
     /* Set options */
     err = setsockopt(fd, SOL_TLS, TLS_PEER_VERIFY, &verify, sizeof(verify));
