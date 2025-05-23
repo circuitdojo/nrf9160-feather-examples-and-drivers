@@ -30,6 +30,7 @@ jobs:
             led_pwm,
             mfw_update,
             sms,
+            usb_detect
           ]
         target:
           [
@@ -40,6 +41,8 @@ jobs:
           # List of target-app combinations to exclude
           - target: circuitdojo_feather_nrf9160/nrf9160/ns
             sample: deep_sleep
+          - target: circuitdojo_feather_nrf9160/nrf9160/ns
+            sample: usb_detect
           - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: external_rtc
           - target: circuitdojo_feather_nrf9151/nrf9151/ns
