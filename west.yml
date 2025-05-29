@@ -9,7 +9,6 @@ manifest:
       remote: nrfconnect
       revision: v3.0.1
       import:
-        path-prefix: external
         name-blocklist:
           - matter
           - nrf-802154
