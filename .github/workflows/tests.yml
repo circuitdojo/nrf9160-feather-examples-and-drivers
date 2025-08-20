@@ -52,7 +52,7 @@ jobs:
           pip3 install -U west
           west init -l .
           west update
-          pip3 install -r ../external/zephyr/scripts/requirements-base.txt
+          pip3 install -r ../zephyr/scripts/requirements-base.txt
 
       - name: Tests
         working-directory: nfed
