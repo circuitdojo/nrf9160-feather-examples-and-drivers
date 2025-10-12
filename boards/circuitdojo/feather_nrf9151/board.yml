@@ -7,7 +7,7 @@ board:
         - name: ns
   revision:
     format: number
-    default: "2"
+    default: "1"
     revisions:
       - name: "1"
       - name: "2"
