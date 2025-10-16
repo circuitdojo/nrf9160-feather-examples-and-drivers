@@ -30,6 +30,7 @@ jobs:
             led_pwm,
             mfw_update,
             sms,
+            serial_lte_modem,
             usb_detect
           ]
         target:
@@ -51,6 +52,8 @@ jobs:
             sample: led_pwm
           - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: mfw_update
+          - target: circuitdojo_feather_nrf9160/nrf9160/ns
+            sample: serial_lte_modem
     steps:
       - name: Checkout
         uses: actions/checkout@v3

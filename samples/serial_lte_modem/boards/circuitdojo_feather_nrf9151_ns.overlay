@@ -1,0 +1,13 @@
+/ {
+	chosen {
+		ncs,slm-uart = &uart0;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&button0 {
+	status = "disabled";
+};
