@@ -1,7 +1,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/mfd/npm1300.h>
+#include <zephyr/drivers/mfd/npm13xx.h>
 LOG_MODULE_REGISTER(app_startup);
 
 #define SYSREG_VBUSIN_BASE 0x02
@@ -22,7 +22,7 @@ static int sysreg_setup(void)
     }
 
     uint8_t data = 0;
-    int ret = mfd_npm1300_reg_read_burst(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, &data, 1);
+    int ret = mfd_npm13xx_reg_read_burst(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, &data, 1);
     if (ret < 0)
     {
         printk("Failed to read VBUSINLIM. Err: %d", ret);
@@ -41,7 +41,7 @@ static int sysreg_setup(void)
     }
 
     /* Write to MFD to set SYSREG current to 500mA */
-    ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, 0);
+    ret = mfd_npm13xx_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_VBUSINILIM0, 0);
     if (ret < 0)
     {
         printk("Failed to set VBUSINLIM. Err: %d\n", ret);
@@ -49,7 +49,7 @@ static int sysreg_setup(void)
     }
 
     /* Save and update */
-    ret = mfd_npm1300_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_TASKUPDATEILIMSW, 0x01);
+    ret = mfd_npm13xx_reg_write(pmic, SYSREG_VBUSIN_BASE, SYSREG_TASKUPDATEILIMSW, 0x01);
     if (ret < 0)
     {
         printk("Failed to save settings. Err: %d\n", ret);

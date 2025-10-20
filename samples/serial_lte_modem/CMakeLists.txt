@@ -21,6 +21,8 @@ target_sources(app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_at
 target_sources(app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_at_icmp.c)
 target_sources(app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_at_fota.c)
 target_sources(app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_uart_handler.c)
+target_sources(app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_ctrl_pin.c)
+
 # NORDIC SDK APP END
 target_sources_ifdef(CONFIG_SLM_SMS app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_at_sms.c)
 target_sources_ifdef(CONFIG_SLM_PPP app PRIVATE ../../../nrf/applications/serial_lte_modem/src/slm_ppp.c)
