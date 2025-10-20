@@ -139,14 +139,14 @@ static int buck2_set_mode(bool enabled)
 
 static void event_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
-  if (pins & BIT(NPM1300_EVENT_VBUS_DETECTED))
+  if (pins & BIT(NPM13XX_EVENT_VBUS_DETECTED))
   {
     LOG_DBG("Vbus connected");
     vbus_connected = true;
     k_sem_give(&usb_detect_sem);
   }
 
-  if (pins & BIT(NPM1300_EVENT_VBUS_REMOVED))
+  if (pins & BIT(NPM13XX_EVENT_VBUS_REMOVED))
   {
     LOG_DBG("Vbus removed");
     vbus_connected = false;
@@ -212,8 +212,8 @@ int main(void)
   static struct gpio_callback event_cb;
 
   gpio_init_callback(&event_cb, event_callback,
-                     BIT(NPM1300_EVENT_VBUS_DETECTED) |
-                         BIT(NPM1300_EVENT_VBUS_REMOVED));
+                     BIT(NPM13XX_EVENT_VBUS_DETECTED) |
+                         BIT(NPM13XX_EVENT_VBUS_REMOVED));
 
   mfd_npm13xx_add_callback(pmic, &event_cb);
 
