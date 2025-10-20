@@ -44,7 +44,7 @@ static const struct gpio_dt_spec hold =
 #endif
 
 #if IS_ENABLED(CONFIG_REGULATOR_NPM13XX)
-// static const struct device *buck2 = DEVICE_DT_GET(DT_NODELABEL(npm1300_buck2));
+static const struct device *buck2 = DEVICE_DT_GET(DT_NODELABEL(npm1300_buck2));
 #endif
 
 static void setup_accel(void)
