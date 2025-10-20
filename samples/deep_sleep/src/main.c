@@ -8,6 +8,9 @@
 #include <zephyr/sys/printk.h>
 
 #define SHIP_BASE 0x0BU
+#define SHIP_OFFSET_CONFIG 0x04U
+#define SHIP_OFFSET_LPCONFIG 0x06U
+#define SHIP_OFFSET_CFGSTROBE 0x01U
 #define SHIP_OFFSET_TASKENTERSHIPMODE 0x02U
 
 /* Addresses */
@@ -41,7 +44,27 @@ int main(void) {
       printk("Failed to set VBUSINLIM. Err: %d\n", ret);
   }
 
-#if false
+    // Initializing here to ensure Hibernate mode works as expected
+    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CONFIG, 3U);
+    if (ret < 0) {
+      printk("Failed to write config. Err: %d\n", ret);
+      return ret;
+    }
+    
+    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_LPCONFIG, 0U);
+    if (ret < 0) {
+      printk("Failed to write config lp config. Err: %d\n", ret);
+      return ret;
+    }
+    
+    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CFGSTROBE, 1U);
+    if (ret < 0) {
+      printk("Failed to write cfg strobe. Err: %d\n", ret);
+      return ret;
+    }
+    
+
+#if true
     /* set hibernate mode and power down */
     ret = mfd_npm1300_hibernate(pmic, 60000);
     if (ret < 0) {
