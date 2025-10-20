@@ -8,7 +8,7 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
-#include <zephyr/drivers/mfd/npm1300.h>
+#include <zephyr/drivers/mfd/npm13xx.h>
 #include <zephyr/drivers/regulator.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/uart.h>
@@ -108,7 +108,7 @@ static int buck2_set_mode(bool enabled)
       return err;
     }
 
-    err = mfd_npm1300_reg_update(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+    err = mfd_npm13xx_reg_update(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                                  0, NPM1300_BUCK2_PULLDOWN_EN);
     if (err < 0)
     {
@@ -125,7 +125,7 @@ static int buck2_set_mode(bool enabled)
       LOG_ERR("Failed to disable buck2: %d", err);
       return err;
     }
-    err = mfd_npm1300_reg_update(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+    err = mfd_npm13xx_reg_update(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                                  NPM1300_BUCK2_PULLDOWN_EN, NPM1300_BUCK2_PULLDOWN_EN);
     if (err < 0)
     {
@@ -215,7 +215,7 @@ int main(void)
                      BIT(NPM1300_EVENT_VBUS_DETECTED) |
                          BIT(NPM1300_EVENT_VBUS_REMOVED));
 
-  mfd_npm1300_add_callback(pmic, &event_cb);
+  mfd_npm13xx_add_callback(pmic, &event_cb);
 
   /* Initialise vbus detection status */
   struct sensor_value val;

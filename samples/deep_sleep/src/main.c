@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#include <zephyr/drivers/mfd/npm1300.h>
+#include <zephyr/drivers/mfd/npm13xx.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
@@ -30,7 +30,7 @@ int main(void) {
   uint8_t reg = 0;
 
   /* See if pulldown is not already enabled */
-  ret = mfd_npm1300_reg_read(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+  ret = mfd_npm13xx_reg_read(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                              &reg);
   if (ret < 0)
     printk("Failed to set VBUSINLIM. Err: %d\n", ret);
@@ -38,26 +38,26 @@ int main(void) {
   if ((reg & 0x08) == 0) {
 
     /* Write to MFD to enable pulldown for both Bucks */
-    ret = mfd_npm1300_reg_write(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+    ret = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                                 0x08 + 0x04);
     if (ret < 0)
       printk("Failed to set VBUSINLIM. Err: %d\n", ret);
   }
 
     // Initializing here to ensure Hibernate mode works as expected
-    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CONFIG, 3U);
+    ret = mfd_npm13xx_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CONFIG, 3U);
     if (ret < 0) {
       printk("Failed to write config. Err: %d\n", ret);
       return ret;
     }
     
-    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_LPCONFIG, 0U);
+    ret = mfd_npm13xx_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_LPCONFIG, 0U);
     if (ret < 0) {
       printk("Failed to write config lp config. Err: %d\n", ret);
       return ret;
     }
     
-    ret = mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CFGSTROBE, 1U);
+    ret = mfd_npm13xx_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_CFGSTROBE, 1U);
     if (ret < 0) {
       printk("Failed to write cfg strobe. Err: %d\n", ret);
       return ret;
@@ -66,7 +66,7 @@ int main(void) {
 
 #if true
     /* set hibernate mode and power down */
-    ret = mfd_npm1300_hibernate(pmic, 60000);
+    ret = mfd_npm13xx_hibernate(pmic, 60000);
     if (ret < 0) {
       printk("Failed to hibernate. Err: %d\n", ret);
       return ret;
@@ -74,7 +74,7 @@ int main(void) {
 #else
   /* Put into ship mode */
   ret =
-      mfd_npm1300_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_TASKENTERSHIPMODE, 1U);
+      mfd_npm13xx_reg_write(pmic, SHIP_BASE, SHIP_OFFSET_TASKENTERSHIPMODE, 1U);
   if (ret < 0) {
     printk("Failed to go into ship mode. Err: %i\n", ret);
     return ret;

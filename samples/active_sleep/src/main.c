@@ -8,7 +8,7 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
-#include <zephyr/drivers/mfd/npm1300.h>
+#include <zephyr/drivers/mfd/npm13xx.h>
 #include <zephyr/drivers/regulator.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/uart.h>
@@ -43,8 +43,8 @@ static const struct gpio_dt_spec hold =
     GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), hold_gpios);
 #endif
 
-#if IS_ENABLED(CONFIG_REGULATOR_NPM1300)
-static const struct device *buck2 = DEVICE_DT_GET(DT_NODELABEL(npm1300_buck2));
+#if IS_ENABLED(CONFIG_REGULATOR_NPM13XX)
+// static const struct device *buck2 = DEVICE_DT_GET(DT_NODELABEL(npm1300_buck2));
 #endif
 
 static void setup_accel(void)
@@ -134,7 +134,7 @@ static int setup_pmic()
   uint8_t reg = 0;
 
   /* See if pulldown is not already enabled */
-  err = mfd_npm1300_reg_read(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+  err = mfd_npm13xx_reg_read(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                              &reg);
   if (err < 0)
     LOG_ERR("Failed to set VBUSINLIM. Err: %d", err);
@@ -143,7 +143,7 @@ static int setup_pmic()
   {
 
     /* Write to MFD to enable pulldown for BUCK2 */
-    err = mfd_npm1300_reg_write(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
+    err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
                                 NPM1300_BUCK2_PULLDOWN_EN);
     if (err < 0)
       LOG_ERR("Failed to set VBUSINLIM. Err: %d", err);
