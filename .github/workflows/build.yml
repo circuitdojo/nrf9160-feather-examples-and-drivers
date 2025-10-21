@@ -2,13 +2,154 @@ name: Build
 
 on: [push, pull_request]
 
+env:
+  ZEPHYR_SDK_INSTALL_PATH: /opt/toolchains
+  ZSDK_VERSION: 0.17.4
+  ZEPHYR_TOOLCHAIN_VARIANT: zephyr
+  UV_CACHE_DIR: /tmp/.uv-cache
+
 jobs:
+  cache-check:
+    runs-on: ubuntu-latest
+    outputs:
+      caches_ready: ${{ steps.vars.outputs.caches_ready }}
+      head_ref: ${{ steps.vars.outputs.head_ref }}
+      sha_short: ${{ steps.vars.outputs.sha_short }}
+    defaults:
+        run:
+          shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      # Using actions/cache@v4 with lookup-only: true often returns false negatives
+      - name: Check Zephyr SDK Cache
+        id: sdk-cache
+        run: |
+          CACHE_KEY="${{ runner.os }}-zephyr-sdk-${{ env.ZSDK_VERSION }}"
+          res=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/caches?key=${CACHE_KEY}" \
+          | jq .total_count)
+          echo "Zephyr SDK cache hit count: $res" >> $GITHUB_STEP_SUMMARY
+          if [ "$res" -gt 0 ]; then
+            echo "cache-hit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache-hit=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check west cache
+        id: west-cache
+        run: |
+          CACHE_KEY="west-${{ runner.os }}-v0.28.6-${{ hashFiles('west.yml') }}"
+          res=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/caches?key=${CACHE_KEY}" \
+          | jq .total_count)
+          echo "West cache hit count: $res" >> $GITHUB_STEP_SUMMARY
+          if [ "$res" -gt 0 ]; then
+            echo "cache-hit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache-hit=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set variables
+        id: vars
+        run: |
+          head_ref=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "head_ref=$head_ref" >> $GITHUB_OUTPUT
+          echo "head_ref name: $head_ref" >> $GITHUB_STEP_SUMMARY
+          sha_short=$(git rev-parse --short HEAD)
+          echo "sha_short=$sha_short" >> $GITHUB_OUTPUT
+          echo "Ref SHA: $sha_short" >> $GITHUB_STEP_SUMMARY
+          caches_ready=${{ steps.sdk-cache.outputs.cache-hit }} && ${{ steps.west-cache.outputs.cache-hit }}
+          echo "Cache warmed: $caches_ready" >> $GITHUB_STEP_SUMMARY
+          echo "caches_ready=$caches_ready" >> "$GITHUB_OUTPUT"
+
+  cache-warming:
+    runs-on: ubuntu-latest
+    needs: cache-check
+    if: needs.cache-check.outputs.caches_ready != 'true'
+    container:
+      image: ghcr.io/zephyrproject-rtos/ci-base:v0.28.6
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: nfed
+
+      - name: Zephyr SDK Cache
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ZEPHYR_SDK_INSTALL_PATH }}/zephyr-sdk-${{ env.ZSDK_VERSION }}
+          key: ${{ runner.os }}-zephyr-sdk-${{ env.ZSDK_VERSION }}
+
+      # The ci-base image now takes care of this, but doesn't allow minimal install
+      - name: Install Zephyr SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ${ZEPHYR_SDK_INSTALL_PATH}
+          wget -nv https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZSDK_VERSION}/zephyr-sdk-${ZSDK_VERSION}_linux-x86_64_minimal.tar.xz
+          tar -xf zephyr-sdk-${ZSDK_VERSION}_linux-x86_64_minimal.tar.xz -C ${ZEPHYR_SDK_INSTALL_PATH}/
+          rm zephyr-sdk-${ZSDK_VERSION}_linux-x86_64_minimal.tar.xz
+
+      - name: Install arm-zephyr-eabi toolchain
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: |
+          wget -nv ${WGET_ARGS} https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZSDK_VERSION}/toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz
+          tar -xf toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz -C ${ZEPHYR_SDK_INSTALL_PATH}/zephyr-sdk-${ZSDK_VERSION}/
+          rm toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz
+
+      - name: West cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            bootloader/
+            modules/
+            nrf/
+            nrfxlib/
+            pcf85063a/
+            tools/
+            zephyr/
+          key: west-${{ runner.os }}-v0.28.6-${{ hashFiles('nfed/west.yml') }}
+
+      - name: Setup uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+          version: latest
+
+      - name: West update
+        working-directory: nfed
+        run: |
+          west init -l .
+          west update
+
+      - name: Install Python dependencies
+        run: |
+          uv pip install -r zephyr/scripts/requirements-base.txt
+          uv pip install -r nrf/scripts/requirements.txt
+          uv pip install -r bootloader/mcuboot/scripts/requirements.txt
+
   build:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.27.3
-    env:
-      CMAKE_PREFIX_PATH: /opt/toolchains
-      XDG_CACHE_HOME: /tmp/pip-cache
+    container:
+      image: ghcr.io/zephyrproject-rtos/ci-base:v0.28.6
+    needs: [cache-check, cache-warming]
+    if: |
+      !cancelled() &&
+      (needs.cache-warming.result == 'skipped' || needs.cache-warming.result == 'success')
+      && needs.cache-check.result == 'success'
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -55,54 +196,57 @@ jobs:
           - target: circuitdojo_feather_nrf9160/nrf9160/ns
             sample: serial_lte_modem
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
           path: nfed
 
-      - name: Set variables
-        working-directory: nfed
-        id: vars
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "branch=${{ github.head_ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Cache West dependencies
-        id: cache-west
-        uses: actions/cache@v4
+      - name: Restore Zephyr SDK Cache
+        id: sdk-cache
+        uses: actions/cache/restore@v4
         with:
+          fail-on-cache-miss: true
+          path: ${{ env.ZEPHYR_SDK_INSTALL_PATH }}/zephyr-sdk-${{ env.ZSDK_VERSION }}
+          key: ${{ runner.os }}-zephyr-sdk-${{ env.ZSDK_VERSION }}
+
+      - name: Run Zephyr SDK setup script
+        run: |
+          ${ZEPHYR_SDK_INSTALL_PATH}/zephyr-sdk-${ZSDK_VERSION}/setup.sh -h -c
+
+      - name: Setup uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+          version: latest
+
+      - name: Restore west cache
+        id: west-cache
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
           path: |
-            bootloader
-            modules
-            nrf
-            nrfxlib
-            tools
-            zephyr
-          key: west-${{ runner.os }}-v0.27.0-${{ hashFiles('nfed/west.yml') }}
-          restore-keys: |
-            west-${{ runner.os }}-v0.27.0-
+            bootloader/
+            modules/
+            nrf/
+            nrfxlib/
+            pcf85063a/
+            tools/
+            zephyr/
+          key: west-${{ runner.os }}-v0.28.6-${{ hashFiles('nfed/west.yml') }}
 
-      - name: Cache Python dependencies
-        id: cache-pip
-        uses: actions/cache@v4
-        with:
-          path: /tmp/pip-cache
-          key: pip-${{ runner.os }}-v0.27.0-${{ hashFiles('zephyr/scripts/requirements-base.txt') }}
-          restore-keys: |
-            pip-${{ runner.os }}-v0.27.0-
-
-      - name: Initialize
+      - name: West init
         working-directory: nfed
+        run: west init -l .
+
+      - name: West update
+        working-directory: nfed
+        run: west update
+
+      - name: Install Python dependencies
         run: |
-          pip3 install -U west
-          west init -l .
-          west update
-          pip3 install -r ../zephyr/scripts/requirements-base.txt
+          uv pip install -r zephyr/scripts/requirements-base.txt
+          uv pip install -r nrf/scripts/requirements.txt
+          uv pip install -r bootloader/mcuboot/scripts/requirements.txt
 
       - name: Extract target base name
         working-directory: nfed
@@ -119,12 +263,11 @@ jobs:
           cp build/merged.hex archive/merged.hex
           cp build/dfu_application.zip archive/dfu_application.zip
           cp build/dfu_application.zip_manifest.json archive/dfu_application.zip_manifest.json
-          ls -l archive
 
       - name: Archive firmware
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}_${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}
+          name: nfed_${{ needs.cache-check.outputs.head_ref }}_${{ needs.cache-check.outputs.sha_short }}_${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}
           path: nfed/archive/
           if-no-files-found: warn
