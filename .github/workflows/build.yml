@@ -34,9 +34,9 @@ jobs:
           | jq .total_count)
           echo "Zephyr SDK cache hit count: $res" >> $GITHUB_STEP_SUMMARY
           if [ "$res" -gt 0 ]; then
-            echo "cache-hit=true" >> "$GITHUB_OUTPUT"
+            echo "cache-hit='true'" >> "$GITHUB_OUTPUT"
           else
-            echo "cache-hit=false" >> "$GITHUB_OUTPUT"
+            echo "cache-hit='false'" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check west cache
@@ -51,9 +51,9 @@ jobs:
           | jq .total_count)
           echo "West cache hit count: $res" >> $GITHUB_STEP_SUMMARY
           if [ "$res" -gt 0 ]; then
-            echo "cache-hit=true" >> "$GITHUB_OUTPUT"
+            echo "cache-hit='true'" >> "$GITHUB_OUTPUT"
           else
-            echo "cache-hit=false" >> "$GITHUB_OUTPUT"
+            echo "cache-hit='false'" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Set variables
@@ -65,7 +65,11 @@ jobs:
           sha_short=$(git rev-parse --short HEAD)
           echo "sha_short=$sha_short" >> $GITHUB_OUTPUT
           echo "Ref SHA: $sha_short" >> $GITHUB_STEP_SUMMARY
-          caches_ready=${{ steps.sdk-cache.outputs.cache-hit }} && ${{ steps.west-cache.outputs.cache-hit }}
+          if ${{ steps.sdk-cache.outputs.cache-hit }} && ${{ steps.west-cache.outputs.cache-hit }}; then
+           caches_ready='true'
+          else
+           caches_ready='false'
+          fi
           echo "Cache warmed: $caches_ready" >> $GITHUB_STEP_SUMMARY
           echo "caches_ready=$caches_ready" >> "$GITHUB_OUTPUT"
 
