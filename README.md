@@ -13,6 +13,25 @@ For the most up to date instructions, please see:
 
 You can purchase the nRF9160 Feather and nRF9151 Feather direct from [Circuit Dojo](https://circuitdojo.com/) and from Digi-Key ([nRF9160](https://www.digikey.com/en/products/detail/circuit-dojo/PASSY-NRF9160-FEATHER/13668137)) ([nRF9151](https://www.digikey.com/en/products/detail/circuit-dojo/PASSY-NRF9151-FEATHER/26580618)).
 
+## Contributing
+
+All contributions must include a "Signed-off-by" line in the commit message to comply with the [Developer Certificate of Origin (DCO)](DCO.txt). This certifies that you have the right to submit the contribution under the project's open source license.
+
+To automatically add the sign-off:
+
+```bash
+git commit -s
+```
+
+Ensure your Git configuration has your real name and email:
+
+```bash
+git config user.name "Your Full Name"
+git config user.email "your.email@example.com"
+```
+
+The email must match the one used in your commits. Pull requests with unsigned commits will be rejected.
+
 ## License
 
 Apache 2.0 applies to all samples. Some samples are based off of the nRF Connect
