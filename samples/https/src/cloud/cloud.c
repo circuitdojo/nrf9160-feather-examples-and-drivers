@@ -96,9 +96,9 @@ int tls_setup(int fd)
 
 static int socket_setup()
 {
-    int fd;
+    int fd = -1;
     int err = 0;
-    struct addrinfo *res;
+    struct addrinfo *res = NULL;
 
     /* Hints */
     struct addrinfo hints =
@@ -162,15 +162,22 @@ static int socket_setup()
     {
         err = -errno;
         LOG_ERR("Unable to connect. Err: %i - %s", err, strerror(errno));
+        goto clean_up;
     }
-    else
-        LOG_INF("Connected!");
+
+    LOG_INF("Connected!");
 
 clean_up:
-    freeaddrinfo(res);
-    if (err < 0 && fd > -1)
+    if (res != NULL)
     {
-        (void)close(fd);
+        LOG_INF("Free addr info");
+        freeaddrinfo(res);
+        res = NULL;
+    }
+
+    if (err < 0 && fd >= 0)
+    {
+        close(fd);
         fd = -1;
     }
 
@@ -246,10 +253,10 @@ int cloud_publish(struct device_data *data)
     fd = socket_setup();
     if (fd < 0)
     {
-        k_free(msg);
+        cJSON_free(msg);
 
-        LOG_ERR("Unable to setup socket. Err: %i", ret);
-        return ret;
+        LOG_ERR("Unable to setup socket. Err: %i", fd);
+        return fd;
     }
 
     LOG_INF("Socket setup complete");
@@ -280,8 +287,11 @@ int cloud_publish(struct device_data *data)
     if (ret < 0)
         LOG_ERR("Unable to send data to cloud. Err: %i", ret);
 
-    /* Close connection */
-    (void)close(fd);
+    /* Close connection (only if socket is valid) */
+    if (fd >= 0)
+    {
+        (void)close(fd);
+    }
 
     /* Free data */
     cJSON_free(msg);
