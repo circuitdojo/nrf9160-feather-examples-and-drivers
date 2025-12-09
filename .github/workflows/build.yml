@@ -7,6 +7,7 @@ env:
   ZSDK_VERSION: 0.17.4
   ZEPHYR_TOOLCHAIN_VARIANT: zephyr
   UV_CACHE_DIR: /tmp/.uv-cache
+  CI_IMAGE_VERSION: v0.28.6
 
 jobs:
   cache-check:
@@ -42,7 +43,7 @@ jobs:
       - name: Check west cache
         id: west-cache
         run: |
-          CACHE_KEY="west-${{ runner.os }}-v0.28.6-${{ hashFiles('west.yml') }}"
+          CACHE_KEY="west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('west.yml') }}"
           res=$(curl -fsSL \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
@@ -121,7 +122,7 @@ jobs:
             pcf85063a/
             tools/
             zephyr/
-          key: west-${{ runner.os }}-v0.28.6-${{ hashFiles('nfed/west.yml') }}
+          key: west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('nfed/west.yml') }}
 
       - name: Setup uv
         id: setup-uv
@@ -236,7 +237,7 @@ jobs:
             pcf85063a/
             tools/
             zephyr/
-          key: west-${{ runner.os }}-v0.28.6-${{ hashFiles('nfed/west.yml') }}
+          key: west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('nfed/west.yml') }}
 
       - name: West init
         working-directory: nfed
