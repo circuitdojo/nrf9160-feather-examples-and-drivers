@@ -26,7 +26,6 @@ declare -a apps=(
     "mfw_update"
     "sms"
     "https"
-    "serial_lte_modem"
     "usb_detect"
 )
 
@@ -34,7 +33,6 @@ declare -a apps=(
 declare -a ignore_combinations=(
     "circuitdojo_feather_nrf9160/nrf9160/ns:deep_sleep"
     "circuitdojo_feather_nrf9160/nrf9160/ns:usb_detect"
-    "circuitdojo_feather_nrf9160/nrf9160/ns:serial_lte_modem"
     "circuitdojo_feather_nrf9151/nrf9151/ns:external_rtc"
     "circuitdojo_feather_nrf9151/nrf9151/ns:external_rtc_time_sync"
     "circuitdojo_feather_nrf9151/nrf9151/ns:led_pwm"
@@ -57,7 +55,7 @@ mkdir -p .out
 # Stop on error
 set -e
 
-if ! west list -f "{url}" | grep https://github.com/circuitdojo/pcf85063a; then
+if ! west list -f "{url}" | grep -q "pcf85063a"; then
     echo 'Missing pcf85063a driver required for external_rtc samples; https://github.com/circuitdojo/pcf85063a';
     exit 1
 fi
