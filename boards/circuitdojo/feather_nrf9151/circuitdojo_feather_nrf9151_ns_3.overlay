@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2024 Circuit Dojo LLC
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&i2c2 {
+
+	sts4x: sts4x@44 {
+		compatible = "sensirion,sts4x";
+		reg = <0x44>;
+		repeatability = <2>;
+	};
+};
+
