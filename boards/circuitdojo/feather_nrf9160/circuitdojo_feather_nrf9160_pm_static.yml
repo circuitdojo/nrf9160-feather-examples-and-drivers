@@ -3,7 +3,7 @@ mcuboot:
   address: 0x0
   placement:
     before: [mcuboot_primary]
-  size: 0xc000
+  size: 0x10000
 mcuboot_pad:
   address: 0x10000
   placement:
@@ -25,11 +25,6 @@ mcuboot_secondary:
     align: { start: 0x8000 }
   share_size: [mcuboot_primary]
   size: 0x78000
-EMPTY_0:
-  address: 0xc000
-  size: 0x4000
-  placement:
-    before: [mcuboot_pad]
 tfm_secure:
   address: 0x10000
   size: 0x8000
