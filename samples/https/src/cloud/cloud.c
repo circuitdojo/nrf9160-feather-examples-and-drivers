@@ -188,7 +188,7 @@ clean_up:
         return fd;
 }
 
-static void response_cb(struct http_response *rsp,
+static int response_cb(struct http_response *rsp,
                         enum http_final_call final_data,
                         void *user_data)
 {
@@ -198,7 +198,7 @@ static void response_cb(struct http_response *rsp,
     /* Check status */
     if (rsp->http_status_code != 200 && rsp->http_status_code != 201)
     {
-        return;
+        return -EINVAL;
     }
 
     if (final_data == HTTP_DATA_FINAL)
@@ -221,6 +221,8 @@ static void response_cb(struct http_response *rsp,
         if (cloud_callback != NULL)
             cloud_callback(&data);
     }
+
+    return 0;
 }
 
 int cloud_publish(struct device_data *data)
