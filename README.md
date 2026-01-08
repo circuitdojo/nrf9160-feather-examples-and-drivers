@@ -13,6 +13,13 @@ For the most up to date instructions, please see:
 
 You can purchase the nRF9160 Feather and nRF9151 Feather direct from [Circuit Dojo](https://circuitdojo.com/) and from Digi-Key ([nRF9160](https://www.digikey.com/en/products/detail/circuit-dojo/PASSY-NRF9160-FEATHER/13668137)) ([nRF9151](https://www.digikey.com/en/products/detail/circuit-dojo/PASSY-NRF9151-FEATHER/26580618)).
 
+## Samples
+
+All samples can be found in this respository except for the following external samples:
+
+- [Serial Modem](https://github.com/circuitdojo/ncs-serial-modem) - used for controlling the nRF9151 via UART from another application processor.
+- [Asset Tracker Template](https://github.com/circuitdojo/asset-tracker-template) - template for common use case of asset tracking provided by Nordic.
+
 ## Contributing
 
 All contributions must include a "Signed-off-by" line in the commit message to comply with the [Developer Certificate of Origin (DCO)](DCO.txt). This certifies that you have the right to submit the contribution under the project's open source license.
