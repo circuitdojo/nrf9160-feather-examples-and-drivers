@@ -178,7 +178,7 @@
 
 			lfs_partition: partition@0 {
 				label = "lfs_partition";
-				reg = <0x00000000 DT_SIZE_M(12)>;
+				reg = <0x00000000 DT_SIZE_M(16)>;
 			};
 		};
 	};
