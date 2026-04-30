@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(main);
 /* Addresses */
 #define NPM1300_BUCK_BASE 0x04U
 #define NPM1300_BUCK_OFFSET_EN_CLR 0x01U
+#define NPM1300_BUCK2_OFFSET_EN_CLR 0x03U
 #define NPM1300_BUCK_BUCKCTRL0 0x15U
 #define NPM1300_BUCK_STATUS 0x34U
 
@@ -41,10 +42,6 @@ static const struct gpio_dt_spec wp =
     GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), wp_gpios);
 static const struct gpio_dt_spec hold =
     GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), hold_gpios);
-#endif
-
-#if IS_ENABLED(CONFIG_REGULATOR_NPM13XX)
-static const struct device *buck2 = DEVICE_DT_GET(DT_NODELABEL(npm1300_buck2));
 #endif
 
 static void setup_accel(void)
@@ -110,48 +107,44 @@ static int setup_pmic()
 {
 
 #if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9161) || defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9151)
-  int err;
 
-  /* Get pmic */
-  static const struct device *pmic = DEVICE_DT_GET(DT_NODELABEL(npm1300_pmic));
-  if (!pmic)
-  {
-    LOG_ERR("Failed to get PMIC device\n");
-    return -ENODEV;
-  }
+    int err;
 
-  /* Disable if not already disabled */
-  if (regulator_is_enabled(buck2))
-  {
-    err = regulator_disable(buck2);
-    if (err < 0)
+    /* Get pmic */
+    static const struct device *pmic = DEVICE_DT_GET(DT_NODELABEL(npm1300_pmic));
+    if (!pmic)
     {
-      LOG_ERR("Failed to disable buck2: %d", err);
-      return err;
+        LOG_ERR("Failed to get PMIC device\n");
+        return -ENODEV;
     }
-  }
 
-  uint8_t reg = 0;
+    /* Bypass regulator framework and disable BUCK2 directly via I2C.
+       The Zephyr refcount can be inflated by a POF event at low VBAT,
+       preventing regulator_disable() from issuing the hardware command. */
+    err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE,
+                    NPM1300_BUCK2_OFFSET_EN_CLR, 0x01);
+    if (err < 0) {
+        LOG_ERR("Failed to disable BUCK2: %d", err);
+    }
 
-  /* See if pulldown is not already enabled */
-  err = mfd_npm13xx_reg_read(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
-                             &reg);
-  if (err < 0)
-    LOG_ERR("Failed to set VBUSINLIM. Err: %d", err);
+    /* Enable pulldown to discharge BUCK2 output */
+    uint8_t reg = 0;
 
-  if ((reg & (NPM1300_BUCK2_PULLDOWN_EN)) == 0)
-  {
-
-    /* Write to MFD to enable pulldown for BUCK2 */
-    err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE, NPM1300_BUCK_BUCKCTRL0,
-                                NPM1300_BUCK2_PULLDOWN_EN);
-    if (err < 0)
-      LOG_ERR("Failed to set VBUSINLIM. Err: %d", err);
-  }
+    err = mfd_npm13xx_reg_read(pmic, NPM1300_BUCK_BASE,
+                   NPM1300_BUCK_BUCKCTRL0, &reg);
+    if (err < 0) {
+        LOG_ERR("Failed to read BUCKCTRL0: %d", err);
+    } else if (!(reg & NPM1300_BUCK2_PULLDOWN_EN)) {
+        err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE,
+                        NPM1300_BUCK_BUCKCTRL0,
+                        NPM1300_BUCK2_PULLDOWN_EN);
+        if (err < 0)
+            LOG_ERR("Failed to enable BUCK2 pulldown: %d", err);
+    }
 
 #endif
 
-  return 0;
+    return 0;
 }
 
 int nor_storage_init(void)
