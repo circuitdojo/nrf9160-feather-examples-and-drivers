@@ -24,6 +24,8 @@ LOG_MODULE_REGISTER(main);
 #define NPM1300_BUCK_BASE 0x04U
 #define NPM1300_BUCK_OFFSET_EN_CLR 0x01U
 #define NPM1300_BUCK2_OFFSET_EN_CLR 0x03U
+#define NPM1300_BUCK1_MODE 0x06U
+#define NPM1300_BUCK2_MODE 0x07U
 #define NPM1300_BUCK_BUCKCTRL0 0x15U
 #define NPM1300_BUCK_STATUS 0x34U
 
@@ -46,6 +48,7 @@ static const struct gpio_dt_spec hold =
 
 static void setup_accel(void)
 {
+#if DT_NODE_HAS_STATUS(DT_ALIAS(accel0), okay)
   const struct device *sensor = DEVICE_DT_GET(DT_ALIAS(accel0));
 
   if (!device_is_ready(sensor))
@@ -66,6 +69,9 @@ static void setup_accel(void)
     LOG_ERR("Failed to set odr: %d", rc);
     return;
   }
+#else
+  LOG_INF("accel0 disabled in DT - skipping");
+#endif
 }
 
 static int setup_gpio(void)
@@ -83,78 +89,62 @@ static int setup_gpio(void)
   return 0;
 }
 
-int setup_uart()
-{
-
+int setup_uart(void)                                                                                                                         
+{                                                                                                                                          
   static const struct device *const console_dev =
-      DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
-
-  /* Disable console UART */
-  int err = pm_device_action_run(console_dev, PM_DEVICE_ACTION_SUSPEND);
-  if (err < 0)
-  {
-    LOG_ERR("Unable to suspend console UART. (err: %d)", err);
-    return err;
-  }
-
-  /* Turn off to save power */
-  NRF_CLOCK->TASKS_HFCLKSTOP = 1;
-
-  return 0;
+      DEVICE_DT_GET(DT_CHOSEN(zephyr_console));                                                                                            
+                                                      
+  /* Stop async RX before suspending */                                                                                                    
+  (void)uart_rx_disable(console_dev);                                                                                                    
+                                                                                              
+                                                                                                                                            
+  int err = pm_device_action_run(console_dev, PM_DEVICE_ACTION_SUSPEND);                                                                 
+  if (err < 0 && err != -EALREADY) {                                                                                                       
+      return err;                                                                                                                          
+  }                                                  
+                                                                                                                                                                                                                                            
+  return 0;                                                                                                                                
 }
 
-static int setup_pmic()
+static int setup_pmic(void)
 {
-
-#if defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9161) || defined(CONFIG_BOARD_CIRCUITDOJO_FEATHER_NRF9151)
-
-    int err;
-
-    /* Get pmic */
-    static const struct device *pmic = DEVICE_DT_GET(DT_NODELABEL(npm1300_pmic));
-    if (!pmic)
-    {
-        LOG_ERR("Failed to get PMIC device\n");
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(npm1300_pmic), okay)
+    const struct device *pmic = DEVICE_DT_GET(DT_NODELABEL(npm1300_pmic));
+    if (!device_is_ready(pmic)) {
+        LOG_ERR("PMIC not ready");
         return -ENODEV;
     }
 
-    /* Bypass regulator framework and disable BUCK2 directly via I2C.
-       The Zephyr refcount can be inflated by a POF event at low VBAT,
-       preventing regulator_disable() from issuing the hardware command. */
+    /* Disable BUCK2 (no external load) and enable its pulldown so the rail
+       collapses cleanly. */
+    int err = mfd_npm13xx_reg_update(pmic, NPM1300_BUCK_BASE,
+                                 NPM1300_BUCK1_MODE,
+                                 NPM1300_BUCK2_PULLDOWN_EN,
+                                 NPM1300_BUCK2_PULLDOWN_EN);
+    if (err < 0) {
+        LOG_ERR("BUCK2 pulldown enable failed: %d", err);
+    }
+
     err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE,
-                    NPM1300_BUCK2_OFFSET_EN_CLR, 0x01);
+                                NPM1300_BUCK2_OFFSET_EN_CLR, 0x01);
     if (err < 0) {
-        LOG_ERR("Failed to disable BUCK2: %d", err);
+        LOG_ERR("BUCK2 disable failed: %d", err);
+        return err;
     }
-
-    /* Enable pulldown to discharge BUCK2 output */
-    uint8_t reg = 0;
-
-    err = mfd_npm13xx_reg_read(pmic, NPM1300_BUCK_BASE,
-                   NPM1300_BUCK_BUCKCTRL0, &reg);
-    if (err < 0) {
-        LOG_ERR("Failed to read BUCKCTRL0: %d", err);
-    } else if (!(reg & NPM1300_BUCK2_PULLDOWN_EN)) {
-        err = mfd_npm13xx_reg_write(pmic, NPM1300_BUCK_BASE,
-                        NPM1300_BUCK_BUCKCTRL0,
-                        NPM1300_BUCK2_PULLDOWN_EN);
-        if (err < 0)
-            LOG_ERR("Failed to enable BUCK2 pulldown: %d", err);
-    }
-
-#endif
 
     return 0;
+#else
+    LOG_INF("npm1300_pmic disabled in DT - skipping");
+    return 0;
+#endif
 }
 
 int nor_storage_init(void)
 {
-
+  /* Put the W25Q128 in DPD via the spi_nor driver. */
   static const struct device *spi_nor = DEVICE_DT_GET(DT_ALIAS(ext_flash));
-
-  /* Disable external flash */
   int err = pm_device_action_run(spi_nor, PM_DEVICE_ACTION_SUSPEND);
-  if (err < 0)
+  if (err < 0 && err != -EALREADY)
   {
     LOG_ERR("Unable to suspend SPI NOR flash. (err: %d)", err);
     return err;
@@ -183,10 +173,10 @@ int main(void)
   if (err < 0)
     LOG_ERR("Unable to initialize nRF Modem lib. Err: %i", err);
 
-  /* Peripherals */
+  /* Disable console */
   setup_uart();
 
-  /* Disable regulator */
+  /* Disable regulator */ 
   setup_pmic();
 
   return 0;
