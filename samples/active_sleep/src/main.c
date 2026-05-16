@@ -22,15 +22,10 @@ LOG_MODULE_REGISTER(main);
 
 /* Addresses */
 #define NPM1300_BUCK_BASE 0x04U
-#define NPM1300_BUCK_OFFSET_EN_CLR 0x01U
 #define NPM1300_BUCK2_OFFSET_EN_CLR 0x03U
-#define NPM1300_BUCK1_MODE 0x06U
-#define NPM1300_BUCK2_MODE 0x07U
 #define NPM1300_BUCK_BUCKCTRL0 0x15U
-#define NPM1300_BUCK_STATUS 0x34U
 
 /* Bits */
-#define NPM1300_BUCK2_MODE_BIT BIT(0)
 #define NPM1300_BUCK2_PULLDOWN_EN BIT(3)
 
 /* Gpios */
@@ -116,9 +111,9 @@ static int setup_pmic(void)
     }
 
     /* Disable BUCK2 (no external load) and enable its pulldown so the rail
-       collapses cleanly. */
+       collapses cleanly. BUCK2ENPULLDOWN is bit 3 of BUCKCTRL0. */
     int err = mfd_npm13xx_reg_update(pmic, NPM1300_BUCK_BASE,
-                                 NPM1300_BUCK1_MODE,
+                                 NPM1300_BUCK_BUCKCTRL0,
                                  NPM1300_BUCK2_PULLDOWN_EN,
                                  NPM1300_BUCK2_PULLDOWN_EN);
     if (err < 0) {
