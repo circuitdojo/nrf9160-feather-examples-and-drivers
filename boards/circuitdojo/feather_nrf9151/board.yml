@@ -1,5 +1,6 @@
 board:
   name: circuitdojo_feather_nrf9151
+  full_name: Circuit Dojo Feather nRF9151
   vendor: circuitdojo
   socs:
     - name: nrf9151
