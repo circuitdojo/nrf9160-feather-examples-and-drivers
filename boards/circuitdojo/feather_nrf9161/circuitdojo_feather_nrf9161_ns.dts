@@ -6,7 +6,7 @@
  */
 
 /dts-v1/;
-#include <nordic/nrf9161ns_laca.dtsi>
+#include <nordic/nrf9161_ns_laca.dtsi>
 #include "circuitdojo_feather_nrf9161_common.dtsi"
 
 / {
