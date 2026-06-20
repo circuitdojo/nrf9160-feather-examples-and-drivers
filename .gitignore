@@ -67,3 +67,6 @@ log-*.txt
 
 # Backup
 *.bak
+
+# Extension output
+**/.zephyr-overrides.json
