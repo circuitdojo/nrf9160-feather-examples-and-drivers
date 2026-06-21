@@ -1,3 +1,2 @@
-config CIRCUITDOJO_FEATHER_NRF9160_STATIC_PARTITIONS_FACTORY
-    bool "Use the static parition defintitions to stay compatible with bootloader"
-    default y
+# Copyright (c) 2024-2026 Circuit Dojo LLC
+# SPDX-License-Identifier: Apache-2.0

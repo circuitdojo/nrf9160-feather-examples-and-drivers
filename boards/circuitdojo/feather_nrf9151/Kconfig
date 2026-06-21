@@ -1,7 +1,3 @@
-config CIRCUITDOJO_FEATHER_NRF9151_STATIC_PARTITIONS_FACTORY
-    bool "Use the static parition defintitions to stay compatible with bootloader"
-    default y
-
 if !MCUBOOT
 config CIRCUITDOJO_FEATHER_NRF9151_PMIC_STARTUP
 	bool "Allows for executing startup code for PMIC."

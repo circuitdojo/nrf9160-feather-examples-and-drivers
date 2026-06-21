@@ -1,60 +1,46 @@
 /*
  * Copyright (c) 2023 Nordic Semiconductor ASA
+ * Copyright (c) 2024-2026 Circuit Dojo LLC
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 /*
- * Default Flash planning for nRF9161dk_nrf9161.
+ * Default SRAM planning when building for nRF91 with
+ * ARM TrustZone-M support.
  *
- * Zephyr build for nRF9161 with ARM TrustZone-M support,
-  * implies building Secure and Non-Secure Zephyr images.
-  *
-  * Secure image will be placed, by default, in flash0
-  * (or in slot0, if MCUboot is present).
-  * Secure image will use sram0 for system memory.
-  *
-  * Non-Secure image will be placed in slot0_ns, and use
-  * sram0_ns for system memory.
-  *
-  * Note that the Secure image only requires knowledge of
-  * the beginning of the Non-Secure image (not its size).
-  */
-
- &slot0_partition {
-     reg = <0x00010000 0x40000>;
-};
-
-&slot0_ns_partition {
-    reg = <0x00050000 0x35000>;
-};
-
-&slot1_partition {
-    reg = <0x00085000 0x40000>;
-};
-
-&slot1_ns_partition {
-    reg = <0x000c5000 0x35000>;
-};
-
-/* Default SRAM planning when building for nRF9161 with
- * ARM TrustZone-M support
  * - Lowest 88 kB SRAM allocated to Secure image (sram0_s).
  * - 40 kB SRAM reserved for and used by the modem library
- *   (sram0_modem). This memory is Non-Secure.
- * - Upper 128 kB allocated to Non-Secure image (sram0_ns).
- *   When building with TF-M, both sram0_modem and sram0_ns
- *   are allocated to the Non-Secure image.
+ *   (sram0_ns_modem). This memory is Non-Secure.
+ * - Upper 128 kB allocated to Non-Secure application (sram0_ns_app).
  */
 
 &sram0_s {
-    reg = <0x20000000 DT_SIZE_K(88)>;
-};
-
-&sram0_modem {
-    reg = <0x20016000 DT_SIZE_K(40)>;
+	reg = <0x20000000 DT_SIZE_K(88)>;
 };
 
 &sram0_ns {
-    reg = <0x20020000 DT_SIZE_K(128)>;
+	reg = <0x20016000 DT_SIZE_K(168)>;
+	ranges = <0x0 0x20016000 DT_SIZE_K(168)>;
+};
+
+&sram0_ns_modem {
+	reg = <0x0 DT_SIZE_K(40)>;
+	ranges = <0x0 0x0 DT_SIZE_K(40)>;
+};
+
+&cpuapp_cpucell_ipc_shm_ctrl {
+	reg = <0x0 0x728>;
+};
+
+&cpuapp_cpucell_ipc_shm_heap {
+	reg = <0x728 0x20d8>;
+};
+
+&cpucell_cpuapp_ipc_shm_heap {
+	reg = <0x2800 0x2000>;
+};
+
+&sram0_ns_app {
+	reg = <0xa000 DT_SIZE_K(128)>;
 };

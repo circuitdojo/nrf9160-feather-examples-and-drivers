@@ -1,0 +1,5 @@
+# Copyright (c) 2026 Circuit Dojo LLC
+# SPDX-License-Identifier: Apache-2.0
+
+config PARTITION_MANAGER
+	default n

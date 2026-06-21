@@ -1,7 +1,7 @@
 # Circuit Dojo nRF9151 Feather configuration
 
 # Copyright (c) 2018-2024 Nordic Semiconductor ASA
-# Copyright (c) 2020-2024 Circuit Dojo LLC
+# Copyright (c) 2020-2026 Circuit Dojo LLC
 # SPDX-License-Identifier: Apache-2.0
 
 if BOARD_CIRCUITDOJO_FEATHER_NRF9151 || BOARD_CIRCUITDOJO_FEATHER_NRF9151_NRF9151_NS
