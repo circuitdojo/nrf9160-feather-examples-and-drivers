@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2020 Circuit Dojo LLC
+ * Copyright (c) 2020-2026 Circuit Dojo LLC
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <zephyr/kernel.h>
 #include <zephyr/net/net_ip.h>
@@ -12,6 +14,12 @@
 #include <zephyr/net/tls_credentials.h>
 #include <zephyr/net/http/client.h>
 #include <zephyr/logging/log.h>
+
+#if defined(CONFIG_POSIX_API)
+#include <zephyr/posix/netdb.h>
+#include <zephyr/posix/sys/socket.h>
+#include <zephyr/posix/unistd.h>
+#endif
 LOG_MODULE_REGISTER(cloud);
 
 #include <modem/modem_key_mgmt.h>
@@ -208,7 +216,7 @@ static int response_cb(struct http_response *rsp,
         if (!rsp->body_found)
         {
             LOG_ERR("Body not found");
-            return;
+            return -ENODATA;
         }
 
         /* TODO: Decode and do something! */
