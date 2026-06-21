@@ -283,6 +283,10 @@
 				cpucell_cpuapp_ipc_shm_heap: image_modem_rx@2800 {
 					/* Modem IPC receive */
 				};
+
+				cpucell_cpuapp_ipc_shm_trace: image_modem_trace@4800 {
+					/* Modem trace */
+				};
 			};
 
 			sram0_ns_app: image_ns_app@a000 {

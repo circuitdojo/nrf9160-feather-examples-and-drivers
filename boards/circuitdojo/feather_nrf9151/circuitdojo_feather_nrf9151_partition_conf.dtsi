@@ -41,6 +41,10 @@
 	reg = <0x2800 0x2000>;
 };
 
+&cpucell_cpuapp_ipc_shm_trace {
+	reg = <0x4800 0x4000>;
+};
+
 &sram0_ns_app {
 	reg = <0xa000 DT_SIZE_K(128)>;
 };
