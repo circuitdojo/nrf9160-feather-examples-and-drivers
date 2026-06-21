@@ -5,7 +5,7 @@ on: []
 jobs:
   tests:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.27.3
+    container: zephyrprojectrtos/ci:v0.29.2
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
       PIP_CACHE_DIR: /tmp/pip-cache
