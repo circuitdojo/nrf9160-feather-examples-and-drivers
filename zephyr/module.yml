@@ -1,5 +1,8 @@
 build:
+  depends:
+    - nrf
   cmake: .
   kconfig: Kconfig
+  sysbuild-cmake: sysbuild
   settings:
     board_root: .

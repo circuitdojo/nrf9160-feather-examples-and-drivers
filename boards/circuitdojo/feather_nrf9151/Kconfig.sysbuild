@@ -1,2 +1,16 @@
 # Copyright (c) 2026 Circuit Dojo LLC
 # SPDX-License-Identifier: Apache-2.0
+
+config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
+	bool "Keep debug access open across resets"
+	default y
+	help
+	  Add uicr_debug_access_open.hex to the merged hex. It writes the
+	  HwUnprotected value (0x50FA50FA) to UICR.APPROTECT and
+	  UICR.SECUREAPPROTECT, so images built with
+	  CONFIG_NRF_(SECURE_)APPROTECT_USE_UICR reopen the debug port on every
+	  boot. Without it, the nRF91x1 locks the debug port after each pin or
+	  power-on reset until the chip is erased.
+
+	  The UICR words can only be written from the erased state, so this takes
+	  effect on a full erase and flash. Disable for production.
