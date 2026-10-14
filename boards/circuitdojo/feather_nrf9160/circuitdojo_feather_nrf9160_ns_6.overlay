@@ -1,7 +1,0 @@
-/*
- * Copyright (c) 2024-2026 Circuit Dojo LLC
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
-#include "circuitdojo_feather_nrf9160_5_6.dtsi"

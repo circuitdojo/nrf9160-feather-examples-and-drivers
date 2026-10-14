@@ -1,4 +1,0 @@
-&uart1 {
-	status = "okay";
-	current-speed = <1000000>;
-};

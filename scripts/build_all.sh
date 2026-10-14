@@ -2,7 +2,6 @@
 
 # Targets
 declare -a targets=(
-    "circuitdojo_feather_nrf9160/nrf9160/ns"
     "circuitdojo_feather_nrf9151/nrf9151/ns"
 )
 
@@ -19,8 +18,6 @@ declare -a apps=(
     "deep_sleep"
     "direct_i2c_access"
     "external_flash"
-    "external_rtc"
-    "external_rtc_time_sync"
     "gps"
     "led_pwm"
     "mfw_update"
@@ -31,12 +28,7 @@ declare -a apps=(
 
 # Combinations to ignore
 declare -a ignore_combinations=(
-    "circuitdojo_feather_nrf9160/nrf9160/ns:deep_sleep"
-    "circuitdojo_feather_nrf9160/nrf9160/ns:usb_detect"
-    "circuitdojo_feather_nrf9151/nrf9151/ns:external_rtc"
-    "circuitdojo_feather_nrf9151/nrf9151/ns:external_rtc_time_sync"
     "circuitdojo_feather_nrf9151/nrf9151/ns:led_pwm"
-    "circuitdojo_feather_nrf9151/nrf9151/ns:mfw_update"
 )
 
 # Get root directory of this project
@@ -54,11 +46,6 @@ mkdir -p .out
 
 # Stop on error
 set -e
-
-if ! west list -f "{url}" | grep -q "pcf85063a"; then
-    echo 'Missing pcf85063a driver required for external_rtc samples; https://github.com/circuitdojo/pcf85063a';
-    exit 1
-fi
 
 # Function to check if combination should be ignored
 should_ignore() {

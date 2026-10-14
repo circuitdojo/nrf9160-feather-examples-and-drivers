@@ -12,17 +12,11 @@ Make sure you have the VSCode plugin installed and running. Here are the instruc
 
 ## Get the modem firmware
 
-Get your modem firmware of choice by nagivating to the [nRF9160 Download page](https://www.nordicsemi.com/Products/Development-hardware/nRF9160-DK/Download) and scrolling to the **nRF9160 SiP modem firmware** section:
-
-![Download page](img/download-page.png)
-
-Download the version you'd like to use.
-
-**IMPORTANT:** currently nRF9160 Feather is shipped with version 1.2.3 of the modem firmware. If you upgrade > v1.3.0 **you cannot downgrade** according to Nordic.
+Get your modem firmware of choice (`mfw_nrf91x1_*.zip`) from the [nRF9151 DK download page](https://www.nordicsemi.com/Products/Development-hardware/nRF9151-DK/Download), in the modem firmware section.
 
 ## Build
 
-Build the sample targeting `circuitdojo_feather_nrf9160_ns`.
+Build the sample targeting `circuitdojo_feather_nrf9151/nrf9151/ns`.
 
 ![Building sample complete](img/build-option.png)
 ![Building sample complete](img/build-complete.png)
@@ -39,7 +33,7 @@ Then load to your device:
 With `python` installed you should be able to run the corresponding `update_modem.py` script easily:
 
 ```
-python3 update_modem.py mfw_nrf9160_1.3.0.zip /dev/tty.SLAB_USBtoUART 1000000
+python3 update_modem.py mfw_nrf91x1_2.0.4.zip /dev/tty.SLAB_USBtoUART 1000000
 ```
 
 **Note:** `update_modem.py` is located in NFED under the `nfed/samples/mfw_update/` path.
@@ -55,7 +49,7 @@ You can confirm you have the version you loaded by running the `AT+CGMR` AT Comm
 ```
 The AT host sample started
 > AT+CGMR
-mfw_nrf9160_1.3.0
+mfw_nrf91x1_2.0.4
 OK
 ```
 
