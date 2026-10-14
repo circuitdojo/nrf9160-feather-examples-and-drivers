@@ -16,7 +16,6 @@
 		zephyr,shell-uart = &uart0;
 		zephyr,uart-mcumgr = &uart0;
 		nordic,modem-trace-uart = &uart1;
-		nordic,pm-ext-flash = &w25q128jv;
 	};
 
 	buttons {
