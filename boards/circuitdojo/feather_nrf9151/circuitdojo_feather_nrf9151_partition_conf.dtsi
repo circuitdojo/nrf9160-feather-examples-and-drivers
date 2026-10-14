@@ -29,12 +29,13 @@
 	ranges = <0x0 0x0 DT_SIZE_K(40)>;
 };
 
+/* Must equal NRF_MODEM_CELLULAR_SHMEM_CTRL_SIZE of the modem library. */
 &cpuapp_cpucell_ipc_shm_ctrl {
-	reg = <0x0 0x728>;
+	reg = <0x0 0x4e8>;
 };
 
 &cpuapp_cpucell_ipc_shm_heap {
-	reg = <0x728 0x20d8>;
+	reg = <0x4e8 0x2318>;
 };
 
 &cpucell_cpuapp_ipc_shm_heap {
