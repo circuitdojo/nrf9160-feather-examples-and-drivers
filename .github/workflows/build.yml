@@ -28,12 +28,20 @@ jobs:
         id: sdk-cache
         run: |
           CACHE_KEY="${{ runner.os }}-zephyr-sdk-${{ env.ZSDK_VERSION }}-${{ env.ZSDK_CACHE_VERSION }}"
-          res=$(curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/caches?key=${CACHE_KEY}" \
-          | jq .total_count)
+          # Only count caches this run can restore: those of its own ref,
+          # the pull request's base branch and the default branch.
+          res=0
+          for ref in "$GITHUB_REF" ${GITHUB_BASE_REF:+"refs/heads/$GITHUB_BASE_REF"} \
+              "refs/heads/${{ github.event.repository.default_branch }}"; do
+            n=$(curl -fsSL -G \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              --data-urlencode "key=${CACHE_KEY}" --data-urlencode "ref=${ref}" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/caches" \
+            | jq --arg key "$CACHE_KEY" '[.actions_caches[] | select(.key == $key)] | length')
+            res=$((res + n))
+          done
           echo "Zephyr SDK cache hit count: $res" >> $GITHUB_STEP_SUMMARY
           if [ "$res" -gt 0 ]; then
             echo "cache-hit='true'" >> "$GITHUB_OUTPUT"
@@ -45,12 +53,20 @@ jobs:
         id: west-cache
         run: |
           CACHE_KEY="west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('west.yml') }}"
-          res=$(curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/caches?key=${CACHE_KEY}" \
-          | jq .total_count)
+          # Only count caches this run can restore: those of its own ref,
+          # the pull request's base branch and the default branch.
+          res=0
+          for ref in "$GITHUB_REF" ${GITHUB_BASE_REF:+"refs/heads/$GITHUB_BASE_REF"} \
+              "refs/heads/${{ github.event.repository.default_branch }}"; do
+            n=$(curl -fsSL -G \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              --data-urlencode "key=${CACHE_KEY}" --data-urlencode "ref=${ref}" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/caches" \
+            | jq --arg key "$CACHE_KEY" '[.actions_caches[] | select(.key == $key)] | length')
+            res=$((res + n))
+          done
           echo "West cache hit count: $res" >> $GITHUB_STEP_SUMMARY
           if [ "$res" -gt 0 ]; then
             echo "cache-hit='true'" >> "$GITHUB_OUTPUT"
