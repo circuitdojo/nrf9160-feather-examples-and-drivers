@@ -121,7 +121,6 @@ jobs:
             modules/
             nrf/
             nrfxlib/
-            pcf85063a/
             tools/
             zephyr/
           key: west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('nfed/west.yml') }}
@@ -172,8 +171,6 @@ jobs:
             button,
             deep_sleep,
             external_flash,
-            external_rtc,
-            external_rtc_time_sync,
             https,
             led_pwm,
             mfw_update,
@@ -182,23 +179,12 @@ jobs:
           ]
         target:
           [
-            circuitdojo_feather_nrf9160/nrf9160/ns,
             circuitdojo_feather_nrf9151/nrf9151/ns,
           ]
         exclude:
           # List of target-app combinations to exclude
-          - target: circuitdojo_feather_nrf9160/nrf9160/ns
-            sample: deep_sleep
-          - target: circuitdojo_feather_nrf9160/nrf9160/ns
-            sample: usb_detect
-          - target: circuitdojo_feather_nrf9151/nrf9151/ns
-            sample: external_rtc
-          - target: circuitdojo_feather_nrf9151/nrf9151/ns
-            sample: external_rtc_time_sync
           - target: circuitdojo_feather_nrf9151/nrf9151/ns
             sample: led_pwm
-          - target: circuitdojo_feather_nrf9151/nrf9151/ns
-            sample: mfw_update
     steps:
       - uses: actions/checkout@v5
         with:
@@ -233,7 +219,6 @@ jobs:
             modules/
             nrf/
             nrfxlib/
-            pcf85063a/
             tools/
             zephyr/
           key: west-${{ runner.os }}-${{ env.CI_IMAGE_VERSION }}-${{ hashFiles('nfed/west.yml') }}

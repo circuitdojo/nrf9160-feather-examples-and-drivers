@@ -1,4 +1,4 @@
-# Contributing to nRF9160 and nRF9151 Feather Examples and Drivers
+# Contributing to nRF9151 Feather Examples and Drivers
 
 Thank you for your interest in contributing! This document outlines the guidelines for contributing to this project.
 
@@ -56,7 +56,7 @@ When adding or modifying samples:
 
 - Include a README.md explaining what the sample does and how to use it
 - Add the sample to the build matrix in `.github/workflows/build.yml`
-- Ensure the sample builds for both nRF9160 and nRF9151 targets (or document why it's excluded)
+- Ensure the sample builds for the nRF9151 Feather target
 - Keep samples focused and minimal - demonstrate one concept well
 
 ## Pull Request Process

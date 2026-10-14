@@ -19,7 +19,7 @@ To run this test you'll need to invoke `twister`. Here are the steps:
     a. Within the `nfed` directory run the following to do a compile time check:
 
     ```
-    ../zephyr/scripts/twister -W -p circuitdojo_feather_nrf9160_ns -T tests/
+    ../zephyr/scripts/twister -W -p circuitdojo_feather_nrf9151/nrf9151/ns -T tests/
     ```
 
     This will do a *compile time only* check. To fully test on hardware jump to option b
@@ -27,10 +27,10 @@ To run this test you'll need to invoke `twister`. Here are the steps:
     b. To run directly on hardware, run like the following:
 
     ```
-    ../zephyr/scripts/twister -W --device-testing --device-serial /dev/cu.SLAB_USBtoUART --west-runner=nrfjprog --west-flash="--erase,--softreset" -p circuitdojo_feather_nrf9160_ns -T tests/
+    ../zephyr/scripts/twister -W --device-testing --device-serial /dev/cu.SLAB_USBtoUART --west-runner=nrfjprog --west-flash="--erase,--softreset" -p circuitdojo_feather_nrf9151/nrf9151/ns -T tests/
     ```
 
-    **Note:** minimally you shouldn't need the `--west-runner` and `--west-flash` options. These are required for any nRF9160 Feather project though!
+    **Note:** minimally you shouldn't need the `--west-runner` and `--west-flash` options. These are required for any nRF9151 Feather project though!
 
     c. To run using the `native_posix` target use the following;
 
