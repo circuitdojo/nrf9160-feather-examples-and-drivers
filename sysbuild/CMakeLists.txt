@@ -14,6 +14,9 @@ if(SB_CONFIG_FEATHER_NRF9151_DEBUG_ACCESS_OPEN)
       "FEATHER_NRF9151_DEBUG_ACCESS_OPEN needs b0 or MCUboot to carry the UICR hex")
   endif()
 
+  # NCS defines add_image_flasher() here and only includes it for some
+  # configurations (e.g. b0), so include it rather than rely on that.
+  include(${ZEPHYR_NRF_MODULE_DIR}/sysbuild/image_flasher.cmake)
   add_image_flasher(NAME uicr_debug_access_open
     HEX_FILE ${SYSBUILD_CURRENT_MODULE_DIR}/boards/circuitdojo/feather_nrf9151/uicr_debug_access_open.hex
     BASE_IMAGE ${uicr_base_image}
