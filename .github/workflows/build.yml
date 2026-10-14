@@ -188,7 +188,6 @@ jobs:
             deep_sleep,
             external_flash,
             https,
-            led_pwm,
             mfw_update,
             sms,
             usb_detect
@@ -197,10 +196,6 @@ jobs:
           [
             circuitdojo_feather_nrf9151/nrf9151/ns,
           ]
-        exclude:
-          # List of target-app combinations to exclude
-          - target: circuitdojo_feather_nrf9151/nrf9151/ns
-            sample: led_pwm
     steps:
       - uses: actions/checkout@v5
         with:

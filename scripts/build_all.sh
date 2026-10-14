@@ -19,7 +19,6 @@ declare -a apps=(
     "direct_i2c_access"
     "external_flash"
     "gps"
-    "led_pwm"
     "mfw_update"
     "sms"
     "https"
@@ -27,9 +26,7 @@ declare -a apps=(
 )
 
 # Combinations to ignore
-declare -a ignore_combinations=(
-    "circuitdojo_feather_nrf9151/nrf9151/ns:led_pwm"
-)
+declare -a ignore_combinations=()
 
 # Get root directory of this project
 prj_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
