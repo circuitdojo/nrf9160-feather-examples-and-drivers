@@ -1,10 +1,9 @@
-identifier: circuitdojo_feather_nrf9151_ns
+identifier: circuitdojo_feather_nrf9151/nrf9151/ns
 name: CircuitDojo-Feather-nRF9151-Non-Secure
 type: mcu
 arch: arm
 toolchain:
   - gnuarmemb
-  - xtools
   - zephyr
 ram: 128
 flash: 192
@@ -12,3 +11,5 @@ supported:
   - i2c
   - pwm
   - watchdog
+vendor: circuitdojo
+sysbuild: true
