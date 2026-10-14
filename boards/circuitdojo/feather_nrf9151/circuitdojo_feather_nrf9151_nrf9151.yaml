@@ -1,10 +1,9 @@
-identifier: circuitdojo_feather_nrf9151
+identifier: circuitdojo_feather_nrf9151/nrf9151
 name: CircuitDojo-Feather-nRF9151
 type: mcu
 arch: arm
 toolchain:
   - gnuarmemb
-  - xtools
   - zephyr
 ram: 88
 flash: 1024
@@ -13,3 +12,5 @@ supported:
   - pwm
   - watchdog
   - counter
+vendor: circuitdojo
+sysbuild: true
