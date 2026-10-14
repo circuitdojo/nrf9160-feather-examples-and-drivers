@@ -32,7 +32,7 @@ To run this test you'll need to invoke `twister`. Here are the steps:
 
     **Note:** minimally you shouldn't need the `--west-runner` and `--west-flash` options. These are required for any nRF9151 Feather project though!
 
-    c. To run using the `native_posix` target use the following;
+    c. To run using the `native_sim` target use the following;
 
     ```
     ../zephyr/scripts/twister 
