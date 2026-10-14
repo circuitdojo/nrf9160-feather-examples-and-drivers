@@ -301,7 +301,7 @@
 					/* Modem IPC control */
 				};
 
-				cpuapp_cpucell_ipc_shm_heap: image_modem_tx@728 {
+				cpuapp_cpucell_ipc_shm_heap: image_modem_tx@4e8 {
 					/* Modem IPC transmit */
 				};
 
