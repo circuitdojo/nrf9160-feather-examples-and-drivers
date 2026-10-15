@@ -143,7 +143,7 @@ jobs:
 
       - name: Setup uv
         id: setup-uv
-        uses: astral-sh/setup-uv@v10
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           enable-cache: false
           version: latest
@@ -217,7 +217,7 @@ jobs:
 
       - name: Setup uv
         id: setup-uv
-        uses: astral-sh/setup-uv@v10
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           enable-cache: false
           version: latest
