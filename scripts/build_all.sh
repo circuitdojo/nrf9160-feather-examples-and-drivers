@@ -19,8 +19,8 @@ declare -a apps=(
     "direct_i2c_access"
     "external_flash"
     "gps"
-    "mfw_update"
     "sms"
+    "temperature_sensor"
     "https"
     "usb_detect"
 )
