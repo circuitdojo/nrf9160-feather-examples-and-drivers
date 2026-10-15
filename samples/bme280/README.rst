@@ -20,8 +20,8 @@ at page 38.
 
 
 .. zephyr-app-commands::
-   :zephyr-app: samples/sensor/bme280
-   :board: nrf52840dk_nrf52840
+   :zephyr-app: samples/bme280
+   :board: circuitdojo_feather_nrf9151/nrf9151/ns
    :goals: flash
    :compact:
 

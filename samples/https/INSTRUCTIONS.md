@@ -1,10 +1,10 @@
 # HTTPS Sample - Caddy Web Server Setup
 
-This guide explains how to set up a basic Caddy web server to receive JSON payloads from the nRF9160 HTTPS sample.
+This guide explains how to set up a basic Caddy web server to receive JSON payloads from the nRF9151 HTTPS sample.
 
 ## Understanding the Sample
 
-The nRF9160 HTTPS sample sends a JSON payload to a configurable endpoint via HTTPS POST request:
+The nRF9151 HTTPS sample sends a JSON payload to a configurable endpoint via HTTPS POST request:
 
 - **JSON Payload Format**: `{"do_something":true}`
 - **Request Method**: HTTP POST
@@ -50,11 +50,11 @@ your-domain.com {
 
     # Log requests to a file
     log {
-        output file /var/log/caddy/nrf9160.log
+        output file /var/log/caddy/nrf9151.log
         format json
     }
 
-    # Endpoint to receive nRF9160 data
+    # Endpoint to receive nRF9151 data
     route /api/device/data {
         # Log the request body
         reverse_proxy localhost:8080
@@ -83,13 +83,13 @@ npm --version
 Create the project directory and initialize:
 
 ```bash
-sudo mkdir -p /opt/nrf9160-receiver
-cd /opt/nrf9160-receiver
+sudo mkdir -p /opt/nrf9151-receiver
+cd /opt/nrf9151-receiver
 sudo npm init -y
 sudo npm install express winston
 ```
 
-Create the server at `/opt/nrf9160-receiver/server.js`:
+Create the server at `/opt/nrf9151-receiver/server.js`:
 
 ```javascript
 const express = require('express');
@@ -103,7 +103,7 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   transports: [
-    new winston.transports.File({ filename: '/var/log/nrf9160-receiver.log' }),
+    new winston.transports.File({ filename: '/var/log/nrf9151-receiver.log' }),
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
@@ -134,12 +134,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// Main endpoint to receive nRF9160 data
+// Main endpoint to receive nRF9151 data
 app.post('/api/device/data', (req, res) => {
   try {
     const data = req.body;
 
-    logger.info('Received data from nRF9160', { payload: data });
+    logger.info('Received data from nRF9151', { payload: data });
 
     // Validate expected fields
     if ('do_something' in data) {
@@ -172,7 +172,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, 'localhost', () => {
-  logger.info(`nRF9160 receiver listening on localhost:${PORT}`);
+  logger.info(`nRF9151 receiver listening on localhost:${PORT}`);
 });
 
 // Graceful shutdown
@@ -189,19 +189,19 @@ process.on('SIGINT', () => {
 
 ## Setting Up the Backend as a Service
 
-Create a systemd service file at `/etc/systemd/system/nrf9160-receiver.service`:
+Create a systemd service file at `/etc/systemd/system/nrf9151-receiver.service`:
 
 ```ini
 [Unit]
-Description=nRF9160 Data Receiver
+Description=nRF9151 Data Receiver
 After=network.target
 
 [Service]
 Type=simple
 User=caddy
 Group=caddy
-WorkingDirectory=/opt/nrf9160-receiver
-ExecStart=/usr/bin/node /opt/nrf9160-receiver/server.js
+WorkingDirectory=/opt/nrf9151-receiver
+ExecStart=/usr/bin/node /opt/nrf9151-receiver/server.js
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production
@@ -214,19 +214,19 @@ Enable and start the service:
 
 ```bash
 # Set proper ownership
-sudo chown -R caddy:caddy /opt/nrf9160-receiver
+sudo chown -R caddy:caddy /opt/nrf9151-receiver
 
 # Create log directory and set permissions
-sudo touch /var/log/nrf9160-receiver.log
-sudo chown caddy:caddy /var/log/nrf9160-receiver.log
+sudo touch /var/log/nrf9151-receiver.log
+sudo chown caddy:caddy /var/log/nrf9151-receiver.log
 
 # Enable and start the service
 sudo systemctl daemon-reload
-sudo systemctl enable nrf9160-receiver
-sudo systemctl start nrf9160-receiver
+sudo systemctl enable nrf9151-receiver
+sudo systemctl start nrf9151-receiver
 
 # Check service status
-sudo systemctl status nrf9160-receiver
+sudo systemctl status nrf9151-receiver
 ```
 
 ## Starting Caddy
@@ -242,7 +242,7 @@ sudo systemctl status caddy
 sudo journalctl -u caddy -f
 ```
 
-## Configuring the nRF9160 Sample
+## Configuring the nRF9151 Sample
 
 Update the configuration in your project's `prj.conf` or via menuconfig:
 
@@ -252,7 +252,7 @@ CONFIG_CLOUD_PORT=443
 CONFIG_CLOUD_PUBLISH_PATH="/api/device/data"
 ```
 
-Build and flash the sample to your nRF9160 device.
+Build and flash the sample to your nRF9151 device.
 
 ## Testing the Setup
 
@@ -267,13 +267,13 @@ curl -X POST https://your-domain.com/api/device/data \
 
 ```bash
 # Watch backend receiver logs
-sudo tail -f /var/log/nrf9160-receiver.log
+sudo tail -f /var/log/nrf9151-receiver.log
 
 # Watch Caddy logs
-sudo tail -f /var/log/caddy/nrf9160.log
+sudo tail -f /var/log/caddy/nrf9151.log
 
 # Watch systemd service logs
-sudo journalctl -u nrf9160-receiver -f
+sudo journalctl -u nrf9151-receiver -f
 ```
 
 ## Troubleshooting
@@ -287,7 +287,7 @@ The sample uses the ISRG Root X1 certificate (Let's Encrypt). Ensure your domain
 - Ensure Caddy and backend services are running
 - Review logs for specific error messages
 
-### nRF9160 Not Connecting
+### nRF9151 Not Connecting
 - Verify `CONFIG_CLOUD_HOSTNAME` matches your domain exactly
 - Check modem has LTE connectivity
 - Review device logs for TLS handshake errors
