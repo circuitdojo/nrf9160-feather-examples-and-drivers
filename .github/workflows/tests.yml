@@ -11,7 +11,7 @@ jobs:
       PIP_CACHE_DIR: /tmp/pip-cache
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: nfed
@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache West dependencies
         id: cache-west
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             nfed/zephyr
@@ -43,7 +43,7 @@ jobs:
 
       - name: Cache Python dependencies
         id: cache-pip
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-v0.27.0-${{ hashFiles('nfed/zephyr/scripts/requirements-base.txt') }}
@@ -65,7 +65,7 @@ jobs:
 
       - name: Archive test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
           path: |

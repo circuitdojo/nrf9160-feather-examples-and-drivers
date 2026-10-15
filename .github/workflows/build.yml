@@ -21,9 +21,9 @@ jobs:
         run:
           shell: bash
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      # Using actions/cache@v4 with lookup-only: true often returns false negatives
+      # Using actions/cache@v6 with lookup-only: true often returns false negatives
       - name: Check Zephyr SDK Cache
         id: sdk-cache
         run: |
@@ -101,13 +101,13 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           path: nfed
 
       - name: Zephyr SDK Cache
         id: sdk-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.ZEPHYR_SDK_INSTALL_PATH }}/zephyr-sdk-${{ env.ZSDK_VERSION }}
           key: ${{ runner.os }}-zephyr-sdk-${{ env.ZSDK_VERSION }}-${{ env.ZSDK_CACHE_VERSION }}
@@ -130,7 +130,7 @@ jobs:
           rm toolchain_gnu_linux-x86_64_arm-zephyr-eabi.tar.xz
 
       - name: West cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             bootloader/
@@ -143,7 +143,7 @@ jobs:
 
       - name: Setup uv
         id: setup-uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v10
         with:
           enable-cache: false
           version: latest
@@ -199,13 +199,13 @@ jobs:
             circuitdojo_feather_nrf9151/nrf9151/ns,
           ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           path: nfed
 
       - name: Restore Zephyr SDK Cache
         id: sdk-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           fail-on-cache-miss: true
           path: ${{ env.ZEPHYR_SDK_INSTALL_PATH }}/zephyr-sdk-${{ env.ZSDK_VERSION }}
@@ -217,14 +217,14 @@ jobs:
 
       - name: Setup uv
         id: setup-uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v10
         with:
           enable-cache: false
           version: latest
 
       - name: Restore west cache
         id: west-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           fail-on-cache-miss: true
           path: |
@@ -275,7 +275,7 @@ jobs:
           cp build/dfu_application.zip_manifest.json archive/dfu_application.zip_manifest.json
 
       - name: Archive firmware
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: nfed_${{ needs.cache-check.outputs.head_ref }}_${{ needs.cache-check.outputs.sha_short }}_${{ matrix.sample }}_${{ steps.target_base.outputs.target_base }}
