@@ -188,7 +188,6 @@ jobs:
             deep_sleep,
             external_flash,
             https,
-            mfw_update,
             sms,
             usb_detect
           ]
