@@ -186,9 +186,12 @@ jobs:
             bme280,
             button,
             deep_sleep,
+            direct_i2c_access,
             external_flash,
+            gps,
             https,
             sms,
+            temperature_sensor,
             usb_detect
           ]
         target:
