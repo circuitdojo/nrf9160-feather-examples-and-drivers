@@ -2,16 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if(SB_CONFIG_FEATHER_NRF9151_DEBUG_ACCESS_OPEN)
-  # Attach the UICR data to the bootloader image, as NCS does for
-  # app_provision.hex, so it lands in the secure merged hex and the non-secure
-  # application hex never touches UICR.
+  # With a bootloader, attach the UICR data to the bootloader image, as NCS
+  # does for app_provision.hex, so it lands in the secure merged hex and the
+  # non-secure application hex never touches UICR. Without one, the default
+  # image's merged hex is the only one flashed and there is no update image to
+  # keep clean, so attach it there.
   if(SB_CONFIG_SECURE_BOOT_APPCORE)
-    set(uicr_base_image b0)
+    set(uicr_base_image_arg BASE_IMAGE b0)
   elseif(SB_CONFIG_BOOTLOADER_MCUBOOT)
-    set(uicr_base_image mcuboot)
+    set(uicr_base_image_arg BASE_IMAGE mcuboot)
   else()
-    message(FATAL_ERROR
-      "FEATHER_NRF9151_DEBUG_ACCESS_OPEN needs b0 or MCUboot to carry the UICR hex")
+    set(uicr_base_image_arg)
   endif()
 
   # NCS defines add_image_flasher() here and only includes it for some
@@ -19,6 +20,6 @@ if(SB_CONFIG_FEATHER_NRF9151_DEBUG_ACCESS_OPEN)
   include(${ZEPHYR_NRF_MODULE_DIR}/sysbuild/image_flasher.cmake)
   add_image_flasher(NAME uicr_debug_access_open
     HEX_FILE ${SYSBUILD_CURRENT_MODULE_DIR}/boards/circuitdojo/feather_nrf9151/uicr_debug_access_open.hex
-    BASE_IMAGE ${uicr_base_image}
+    ${uicr_base_image_arg}
   )
 endif()

@@ -3,7 +3,6 @@
 
 config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
 	bool "Keep debug access open across resets"
-	depends on SECURE_BOOT_APPCORE || BOOTLOADER_MCUBOOT
 	default y
 	help
 	  Add uicr_debug_access_open.hex to the merged hex. It writes the
@@ -16,5 +15,6 @@ config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
 	  The UICR words can only be written from the erased state, so this takes
 	  effect on a full erase and flash. Disable for production.
 
-	  Needs b0 or MCUboot, whose image carries the UICR data so the
-	  non-secure application hex never touches UICR.
+	  With b0 or MCUboot, the bootloader image carries the UICR data so the
+	  non-secure application hex never touches UICR. Without a bootloader,
+	  the application's merged hex carries it.
