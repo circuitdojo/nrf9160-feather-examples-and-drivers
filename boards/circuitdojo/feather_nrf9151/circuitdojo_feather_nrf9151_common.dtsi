@@ -165,7 +165,8 @@
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <133000000>;
-		size = <0x1000000>;
+		/* In bits: 128 Mbit (16 MiB). */
+		size = <0x8000000>;
 		has-dpd;
 		t-enter-dpd = <30000>;
 		t-exit-dpd = <30000>;
