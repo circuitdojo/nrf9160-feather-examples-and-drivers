@@ -19,4 +19,14 @@ config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
 	  uicr_debug_access_open, listed in domains.yaml), so no application or
 	  update hex ever touches UICR. With b0 or MCUboot it takes the
 	  bootloader's board and configuration. `west flash` runs it after the
-	  default image; Zephyr Tools flashes it first.
+	  default image; Zephyr Tools flashes it with every other image in
+	  merged_<board_target>.hex (MERGED_HEX_FILES).
+
+config MERGED_HEX_FILES
+	default y
+	help
+	  The UICR image (FEATHER_NRF9151_DEBUG_ACCESS_OPEN) is its own sysbuild
+	  image, flashed separately from the application unless merged. Two
+	  probe-rs sessions let the chip reset in between with no firmware that
+	  opens the debug port, and the nRF91x1 locks it. Merge every image into
+	  merged_<board_target>.hex so a single download writes them all.
