@@ -2,11 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if(SB_CONFIG_FEATHER_NRF9151_DEBUG_ACCESS_OPEN)
-  # With a bootloader, attach the UICR data to the bootloader image, as NCS
-  # does for app_provision.hex, so it lands in the secure merged hex and the
-  # non-secure application hex never touches UICR. Without one, the default
-  # image's merged hex is the only one flashed and there is no update image to
-  # keep clean, so attach it there.
+  # The UICR data is flashed as its own sysbuild image (an image flasher), so
+  # neither the application nor an update image ever carries UICR words.
+  # With a bootloader the flasher takes that image's board and configuration
+  # (BASE_IMAGE); without one it uses the default image's.
   if(SB_CONFIG_SECURE_BOOT_APPCORE)
     set(uicr_base_image_arg BASE_IMAGE b0)
   elseif(SB_CONFIG_BOOTLOADER_MCUBOOT)

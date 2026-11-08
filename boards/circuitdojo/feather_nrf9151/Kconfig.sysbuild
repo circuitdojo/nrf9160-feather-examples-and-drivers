@@ -5,7 +5,7 @@ config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
 	bool "Keep debug access open across resets"
 	default y
 	help
-	  Add uicr_debug_access_open.hex to the merged hex. It writes the
+	  Flash uicr_debug_access_open.hex with the build. It writes the
 	  HwUnprotected value (0x50FA50FA) to UICR.APPROTECT and
 	  UICR.SECUREAPPROTECT, so images built with
 	  CONFIG_NRF_(SECURE_)APPROTECT_USE_UICR reopen the debug port on every
@@ -15,6 +15,8 @@ config FEATHER_NRF9151_DEBUG_ACCESS_OPEN
 	  The UICR words can only be written from the erased state, so this takes
 	  effect on a full erase and flash. Disable for production.
 
-	  With b0 or MCUboot, the bootloader image carries the UICR data so the
-	  non-secure application hex never touches UICR. Without a bootloader,
-	  the application's merged hex carries it.
+	  The hex is its own sysbuild image (an NCS image flasher named
+	  uicr_debug_access_open, listed in domains.yaml), so no application or
+	  update hex ever touches UICR. With b0 or MCUboot it takes the
+	  bootloader's board and configuration. `west flash` runs it after the
+	  default image; Zephyr Tools flashes it first.
