@@ -7,7 +7,7 @@ manifest:
     - name: nrf
       repo-path: sdk-nrf
       remote: nrfconnect
-      revision: v3.5.0-preview3
+      revision: v3.5.0-preview4
       import:
         name-blocklist:
           - matter
